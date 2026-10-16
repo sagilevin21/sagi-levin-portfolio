@@ -1,28 +1,17 @@
 import { useEffect, useRef, useState } from 'react'
 import { whenIdle, whenIntroDone } from '../intro'
 
-// ---- Feel of the liquid glass ------------------------------------------
-const DURATION = 750 // ms for the liquid to settle flat
-const FADE = 260 // ms for the old image to cross-fade into the new one
-const SIZE = 1.6 // size of the liquid swells (lower = bigger, softer)
-const BEND = 0.028 // how strongly the liquid bends the image
-const FLOW = 1.1 // how fast the surface flows while it settles
-const RAINBOW = 0.35 // faint colour fringe where the bend is strongest (0 = none)
-const SHEEN = 0.3 // soft light catching the surface (0 = none)
-const FROST = 0.007 // how far frost scatters the light (0 = clear glass)
-const FROST_AMOUNT = 0.75 // how much of the glass is frosted (0–1)
-// -------------------------------------------------------------------------
+// Which transition plays between project images: 'grain' or 'liquid'
+const EFFECT = 'grain'
 
 const VERT = `
 attribute vec2 p;
 varying vec2 uv;
 void main() { uv = p * 0.5 + 0.5; gl_Position = vec4(p, 0.0, 1.0); }`
 
-// A smooth, flowing height field acts as a liquid lens over the image: its
-// slope bends the picture, splits colour slightly, and catches a soft light.
-// Frost scatters each pixel over a few nearby points in a random direction,
-// which gives the soft, slightly grainy look of frosted glass.
-const FRAG = `
+// Shared by both effects: two images (a = previous, b = new), each scaled to
+// fill the frame, cross-faded by mixAB
+const COMMON = `
 #ifdef GL_FRAGMENT_PRECISION_HIGH
 precision highp float;
 #else
@@ -31,7 +20,73 @@ precision mediump float;
 varying vec2 uv;
 uniform sampler2D a, b;
 uniform vec2 coverA, coverB;
-uniform float mixAB, k, aspect, time, size, bend, rainbow, sheen, frost, frostAmount;
+uniform float mixAB, k, aspect, time;
+vec2 cover(vec2 q, vec2 s) { return clamp((q - 0.5) * s + 0.5, 0.0, 1.0); }
+vec4 pick(vec2 q) {
+  q = clamp(q, 0.0, 1.0);
+  return mix(texture2D(a, cover(q, coverA)), texture2D(b, cover(q, coverB)), mixAB);
+}
+`
+
+// ---- Film grain ------------------------------------------------------------
+// The new image arrives like projected film: heavy grain that changes 24
+// times a second (blended in "overlay" mode), a soft retro grade (lifted
+// blacks, warm tint, a little less colour), a slight exposure flicker and a
+// tiny frame jitter. All of it fades out into the clean photo.
+const GRAIN_FRAG = `${COMMON}
+uniform float grainSize, grain, retro, flicker, vignette;
+
+// Hash without sine (stable on phones)
+float hash(vec3 p) {
+  p = fract(p * vec3(0.1031, 0.1030, 0.0973));
+  p += dot(p, p.yxz + 33.33);
+  return fract((p.x + p.y) * p.z);
+}
+vec3 overlay(vec3 base, vec3 blend) {
+  return mix(2.0 * base * blend, 1.0 - 2.0 * (1.0 - base) * (1.0 - blend), step(0.5, base));
+}
+// Soft, clumpy grain: random values on a grid, smoothly blended between
+float grainNoise(vec2 p, float frame) {
+  vec2 i = floor(p), f = fract(p);
+  f = f * f * (3.0 - 2.0 * f);
+  float n00 = hash(vec3(i, frame)), n10 = hash(vec3(i + vec2(1.0, 0.0), frame));
+  float n01 = hash(vec3(i + vec2(0.0, 1.0), frame)), n11 = hash(vec3(i + vec2(1.0, 1.0), frame));
+  return mix(mix(n00, n10, f.x), mix(n01, n11, f.x), f.y);
+}
+
+void main() {
+  float frame = floor(time * 24.0);
+
+  vec3 col = pick(uv).rgb;
+
+  float luma = dot(col, vec3(0.299, 0.587, 0.114));
+  vec3 graded = mix(col, vec3(luma), 0.25);
+  graded = graded * 0.84 + vec3(0.08, 0.065, 0.045);
+  graded *= vec3(1.04, 1.0, 0.9);
+  col = mix(col, graded, retro * k);
+
+  col *= 1.0 + (hash(vec3(frame, 5.0, 9.0)) - 0.5) * flicker * k;
+
+  // Two grain sizes, a fresh pattern every film frame
+  vec2 px = gl_FragCoord.xy / grainSize;
+  float n = grainNoise(px, frame) * 0.6 + grainNoise(px * 0.42 + 31.7, frame + 17.0) * 0.4;
+  n = (n - 0.5) * 2.0 * grain * k;
+  // Blend like film: overlay for texture in the midtones and highlights, plus
+  // a little added directly so the shadows get grain too
+  vec3 g = vec3(clamp(0.5 + n, 0.0, 1.0));
+  col = mix(col, overlay(col, g), 0.75) + n * 0.12;
+
+  vec2 d = uv - 0.5;
+  col *= 1.0 - dot(d, d) * vignette * k;
+  gl_FragColor = vec4(col, 1.0);
+}`
+
+// ---- Liquid glass ----------------------------------------------------------
+// A smooth, flowing height field acts as a liquid lens over the image: its
+// slope bends the picture, splits colour slightly, and catches a soft light.
+// Frost scatters each pixel over a few nearby points in a random direction.
+const LIQUID_FRAG = `${COMMON}
+uniform float size, bend, rainbow, sheen, frost, frostAmount;
 
 float hash(vec2 q) { return fract(sin(dot(q, vec2(127.1, 311.7))) * 43758.5453); }
 float noise(vec2 q) {
@@ -44,11 +99,6 @@ float noise(vec2 q) {
 float height(vec2 q) {
   vec2 drift = vec2(time * 0.35, -time * 0.5);
   return noise(q + drift) * 0.7 + noise(q * 1.9 - drift * 1.4 + 4.7) * 0.3;
-}
-vec2 cover(vec2 q, vec2 s) { return clamp((q - 0.5) * s + 0.5, 0.0, 1.0); }
-vec4 pick(vec2 q) {
-  q = clamp(q, 0.0, 1.0);
-  return mix(texture2D(a, cover(q, coverA)), texture2D(b, cover(q, coverB)), mixAB);
 }
 
 void main() {
@@ -63,7 +113,6 @@ void main() {
   c.r = pick(uv + off + split).r;
   c.b = pick(uv + off - split).b;
 
-  // Frost: six taps on a small ring, turned by a random angle per pixel
   float angle = hash(uv * 1013.0) * 6.2832;
   float radius = frost * k;
   vec4 frosted = vec4(0.0);
@@ -81,10 +130,36 @@ void main() {
   gl_FragColor = c;
 }`
 
-const easeOut = (t) => 1 - Math.pow(1 - t, 3)
+// ---- Feel of each effect -----------------------------------------------------
+const EFFECTS = {
+  grain: {
+    frag: GRAIN_FRAG,
+    duration: 500, // ms for the grain to fade into the clean photo
+    fade: 200, // ms for the old image to cross-fade into the new one
+    timeScale: 1,
+    strength: (t) => Math.pow(1 - t, 1.6), // gradual fade-out
+    settings: {
+      grainSize: 1.7, // size of a grain, in screen pixels
+      grain: 0.5, // how strong the grain is (0–1)
+      retro: 0.8, // how much of the retro colour grade (0–1)
+      flicker: 0.08, // exposure flicker
+      vignette: 0.35, // darker corners
+    },
+  },
+  liquid: {
+    frag: LIQUID_FRAG,
+    duration: 750,
+    fade: 260,
+    timeScale: 1.1,
+    strength: (t) => Math.pow(1 - t, 3),
+    settings: { size: 1.6, bend: 0.028, rainbow: 0.35, sheen: 0.3, frost: 0.007, frostAmount: 0.75 },
+  },
+}
+const FX = EFFECTS[EFFECT]
+// -----------------------------------------------------------------------------
 
-// Shows the active image. Each time it changes, the picture appears through
-// flowing liquid glass that quickly settles flat.
+// Shows the active image. Each time it changes, the new picture arrives
+// through the chosen effect, which quickly settles into the clean photo.
 export default function GlassBackdrop({ images, active }) {
   const canvasRef = useRef(null)
   const glRef = useRef(null) // { gl, u, textures: Map, current, previous }
@@ -106,7 +181,7 @@ export default function GlassBackdrop({ images, active }) {
     }
     const prog = gl.createProgram()
     gl.attachShader(prog, compile(gl.VERTEX_SHADER, VERT))
-    gl.attachShader(prog, compile(gl.FRAGMENT_SHADER, FRAG))
+    gl.attachShader(prog, compile(gl.FRAGMENT_SHADER, FX.frag))
     gl.linkProgram(prog)
     if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) {
       setFallback(true)
@@ -121,17 +196,14 @@ export default function GlassBackdrop({ images, active }) {
     gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0)
 
     const u = {}
-    for (const name of ['a', 'b', 'coverA', 'coverB', 'mixAB', 'k', 'aspect', 'time', 'size', 'bend', 'rainbow', 'sheen', 'frost', 'frostAmount']) {
+    for (const name of ['a', 'b', 'coverA', 'coverB', 'mixAB', 'k', 'aspect', 'time']) {
       u[name] = gl.getUniformLocation(prog, name)
     }
     gl.uniform1i(u.a, 0)
     gl.uniform1i(u.b, 1)
-    gl.uniform1f(u.size, SIZE)
-    gl.uniform1f(u.bend, BEND)
-    gl.uniform1f(u.rainbow, RAINBOW)
-    gl.uniform1f(u.sheen, SHEEN)
-    gl.uniform1f(u.frost, FROST)
-    gl.uniform1f(u.frostAmount, FROST_AMOUNT)
+    for (const [name, value] of Object.entries(FX.settings)) {
+      gl.uniform1f(gl.getUniformLocation(prog, name), value)
+    }
     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true)
 
     const state = { gl, u, textures: new Map(), current: null, previous: null, k: 0, mix: 1, time: 0 }
@@ -175,7 +247,7 @@ export default function GlassBackdrop({ images, active }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  // Play the glass each time the active image changes
+  // Play the effect each time the active image changes
   useEffect(() => {
     const state = glRef.current
     if (!state || !active) return
@@ -184,6 +256,7 @@ export default function GlassBackdrop({ images, active }) {
     const start = () => {
       state.previous = state.current ?? active
       state.current = active
+      // Add ?glass-hold to the address to freeze the effect at full strength
       const hold = new URLSearchParams(window.location.search).has('glass-hold')
       const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
       if (hold || reduce) {
@@ -195,11 +268,11 @@ export default function GlassBackdrop({ images, active }) {
       const t0 = performance.now()
       const tick = (now) => {
         const t = Math.max(0, now - t0)
-        state.k = 1 - easeOut(Math.min(1, t / DURATION))
-        state.time = (t / 1000) * FLOW
-        state.mix = Math.min(1, t / FADE)
+        state.k = FX.strength(Math.min(1, t / FX.duration))
+        state.time = (t / 1000) * FX.timeScale
+        state.mix = Math.min(1, t / FX.fade)
         draw(state)
-        if (t < DURATION) raf = requestAnimationFrame(tick)
+        if (t < FX.duration) raf = requestAnimationFrame(tick)
       }
       raf = requestAnimationFrame(tick)
     }

@@ -4,7 +4,7 @@
   --accent: #e0566b;
 
   --sans: 'Instrument Sans', 'Helvetica Neue', Arial, sans-serif;
-  --serif: 'Fraunces', Georgia, serif;
+  --serif: 'Playfair Display', Georgia, serif;
 
   --gutter: clamp(16px, 2.6vw, 40px);
   --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
