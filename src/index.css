@@ -115,16 +115,20 @@ p {
 
 .site-nav {
   display: flex;
+  align-items: baseline;
   gap: clamp(16px, 2vw, 32px);
   font-size: 14px;
+  line-height: 1.45;
 }
 
-.site-nav a {
+.site-nav a,
+.contact-toggle {
   position: relative;
 }
 
 /* Underline that draws in on hover */
-.site-nav a::after {
+.site-nav a::after,
+.contact-toggle::after {
   content: '';
   position: absolute;
   left: 0;
@@ -138,9 +142,89 @@ p {
 }
 
 .site-nav a:hover::after,
-.site-nav a.active::after {
+.site-nav a.active::after,
+.contact-menu.is-open .contact-toggle::after {
   transform: scaleX(1);
   transform-origin: left;
+}
+
+/* Project count next to "All work", same as on the Home page */
+.site-nav sup {
+  font-size: 10px;
+  margin-left: 2px;
+  /* Raised without making its line taller, so every item shares one baseline */
+  line-height: 0;
+  vertical-align: 0.55em;
+}
+
+/* ---------- Contact menu (pages other than Home) ---------- */
+
+.contact-menu {
+  position: relative;
+}
+
+.contact-toggle {
+  font: inherit;
+  line-height: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+
+/* The links drop down under "Contact", right-aligned, one per line */
+.contact-links {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin: 0;
+  /* Padding instead of a gap, so the mouse can travel down without the menu closing */
+  padding: 12px 0 0;
+  list-style: none;
+  display: grid;
+  gap: 6px;
+  justify-items: end;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-4px);
+  transition:
+    opacity 250ms var(--ease),
+    transform 350ms var(--ease),
+    visibility 0s linear 350ms;
+}
+
+.contact-menu.is-open .contact-links {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+  transition:
+    opacity 250ms var(--ease),
+    transform 350ms var(--ease),
+    visibility 0s;
+}
+
+/* Links slide in one after another */
+.contact-links li {
+  opacity: 0;
+  transform: translateY(-3px);
+  transition:
+    opacity 250ms var(--ease),
+    transform 350ms var(--ease);
+}
+
+.contact-menu.is-open .contact-links li {
+  opacity: 1;
+  transform: none;
+}
+
+.contact-menu.is-open .contact-links li:nth-child(2) {
+  transition-delay: 50ms;
+}
+
+.contact-menu.is-open .contact-links li:nth-child(3) {
+  transition-delay: 100ms;
 }
 
 /* ---------- Click ripple ---------- */

@@ -20,11 +20,17 @@ precision mediump float;
 varying vec2 uv;
 uniform sampler2D a, b;
 uniform vec2 coverA, coverB;
+uniform float shiftA, shiftB;
 uniform float mixAB, k, aspect, time;
-vec2 cover(vec2 q, vec2 s) { return clamp((q - 0.5) * s + 0.5, 0.0, 1.0); }
+// shift moves an image sideways (share of the frame width); the uncovered
+// edge repeats the photo's edge pixels, which works for plain backdrops
+vec2 cover(vec2 q, vec2 s, float shift) {
+  q.x -= shift;
+  return clamp((q - 0.5) * s + 0.5, 0.0, 1.0);
+}
 vec4 pick(vec2 q) {
   q = clamp(q, 0.0, 1.0);
-  return mix(texture2D(a, cover(q, coverA)), texture2D(b, cover(q, coverB)), mixAB);
+  return mix(texture2D(a, cover(q, coverA, shiftA)), texture2D(b, cover(q, coverB, shiftB)), mixAB);
 }
 `
 
@@ -160,7 +166,7 @@ const FX = EFFECTS[EFFECT]
 
 // Shows the active image. Each time it changes, the new picture arrives
 // through the chosen effect, which quickly settles into the clean photo.
-export default function GlassBackdrop({ images, active }) {
+export default function GlassBackdrop({ images, active, shifts = {} }) {
   const canvasRef = useRef(null)
   const glRef = useRef(null) // { gl, u, textures: Map, current, previous }
   const [fallback, setFallback] = useState(false)
@@ -196,7 +202,7 @@ export default function GlassBackdrop({ images, active }) {
     gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0)
 
     const u = {}
-    for (const name of ['a', 'b', 'coverA', 'coverB', 'mixAB', 'k', 'aspect', 'time']) {
+    for (const name of ['a', 'b', 'coverA', 'coverB', 'shiftA', 'shiftB', 'mixAB', 'k', 'aspect', 'time']) {
       u[name] = gl.getUniformLocation(prog, name)
     }
     gl.uniform1i(u.a, 0)
@@ -206,7 +212,7 @@ export default function GlassBackdrop({ images, active }) {
     }
     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true)
 
-    const state = { gl, u, textures: new Map(), current: null, previous: null, k: 0, mix: 1, time: 0 }
+    const state = { gl, u, shifts, textures: new Map(), current: null, previous: null, k: 0, mix: 1, time: 0 }
     glRef.current = state
 
     // Load the images as textures once the intro is over, one at a time in
@@ -290,7 +296,13 @@ export default function GlassBackdrop({ images, active }) {
     return (
       <div className="glass">
         {images.map((src) => (
-          <img key={src} src={src} alt="" className={src === active ? 'is-active' : ''} />
+          <img
+            key={src}
+            src={src}
+            alt=""
+            className={src === active ? 'is-active' : ''}
+            style={shifts[src] ? { transform: `translateX(${shifts[src] * 100}%)` } : undefined}
+          />
         ))}
       </div>
     )
@@ -304,7 +316,7 @@ export default function GlassBackdrop({ images, active }) {
 }
 
 function draw(state) {
-  const { gl, u, textures, current, previous, k, mix, time } = state
+  const { gl, u, shifts, textures, current, previous, k, mix, time } = state
   const canvas = gl.canvas
   const dpr = Math.min(window.devicePixelRatio || 1, 2)
   const w = Math.round(canvas.clientWidth * dpr)
@@ -333,6 +345,8 @@ function draw(state) {
   gl.bindTexture(gl.TEXTURE_2D, next.tex)
   gl.uniform2fv(u.coverA, coverOf(prev))
   gl.uniform2fv(u.coverB, coverOf(next))
+  gl.uniform1f(u.shiftA, shifts[previous ?? current] ?? 0)
+  gl.uniform1f(u.shiftB, shifts[current] ?? 0)
   gl.uniform1f(u.mixAB, mix)
   gl.uniform1f(u.k, k)
   gl.uniform1f(u.aspect, aspect)

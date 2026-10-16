@@ -3,9 +3,13 @@ export const site = {
   name: 'Sagi Levin',
   role: 'Industrial designer',
   location: 'Jerusalem',
-  intro:
-    'Industrial designer and multidisciplinary creative. I make objects that tell stories, through materials, hands-on experiments and a lot of prototypes.',
-  status: 'Looking for an internship',
+  // Small heading above the intro on the Home page
+  introTitle: 'Design & Art Portfolio',
+  // One paragraph; each entry starts on a new line
+  intro: [
+    'Industrial designer and multidisciplinary creative.',
+    "I'm curious about how the world works, the little things that go unnoticed, and the stories objects can tell. I love getting my hands dirty and seeing where ideas take me.",
+  ],
   email: 'sagilevin12@gmail.com',
   linkedin: 'https://www.linkedin.com/in/sagi-levin-a820ab362/',
   instagram: 'https://www.instagram.com/sagi_levin',

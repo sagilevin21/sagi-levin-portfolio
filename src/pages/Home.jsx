@@ -7,6 +7,7 @@ import GlassBackdrop from '../components/GlassBackdrop'
 import './Home.css'
 
 const covers = featuredProjects.map((p) => p.cover)
+const coverShifts = Object.fromEntries(featuredProjects.map((p) => [p.cover, p.coverShift ?? 0]))
 
 // true = image fills the whole window, false = image sits in a frame on the right
 const FULLSCREEN_IMAGE = true
@@ -16,7 +17,6 @@ const pad = (n) => String(n).padStart(2, '0')
 export default function Home() {
   const [activeSlug, setActiveSlug] = useState(null)
   const active = featuredProjects.find((p) => p.slug === activeSlug)
-  const activeIndex = featuredProjects.indexOf(active)
   const listRef = useRef(null)
 
   useTheme(active?.colors ?? idleColors)
@@ -45,7 +45,7 @@ export default function Home() {
       <div
         className={`home-backdrop ${active ? 'is-on' : ''} ${FULLSCREEN_IMAGE ? 'is-full' : ''}`}
       >
-        <GlassBackdrop images={covers} active={active?.cover} />
+        <GlassBackdrop images={covers} active={active?.cover} shifts={coverShifts} />
       </div>
 
       <h1 className="visually-hidden">
@@ -55,13 +55,9 @@ export default function Home() {
       {/* Phones: intro sits above the list instead of in the corner label */}
       <section className="home-intro" aria-hidden="true">
         <p className="label-kicker">
-          {site.role}, {site.location}
+          {site.introTitle}
         </p>
-        <p className="label-text">{site.intro}</p>
-        <p className="label-status">
-          <span className="dot" />
-          {site.status}
-        </p>
+        <IntroText />
       </section>
 
       <ol
@@ -96,7 +92,6 @@ export default function Home() {
       <aside className="label" aria-live="polite">
         {active ? (
           <div className="label-inner" key={active.slug}>
-            <p className="label-kicker">Fig. {pad(activeIndex + 1)}</p>
             <p className="label-title">{active.title}</p>
             <p className="label-field">{active.field}</p>
             <p className="label-text">{active.summary}</p>
@@ -104,13 +99,9 @@ export default function Home() {
         ) : (
           <div className="label-inner" key="intro">
             <p className="label-kicker">
-              {site.role}, {site.location}
+              {site.introTitle}
             </p>
-            <p className="label-text">{site.intro}</p>
-            <p className="label-status">
-              <span className="dot" aria-hidden="true" />
-              {site.status}
-            </p>
+            <IntroText />
           </div>
         )}
       </aside>
@@ -130,5 +121,19 @@ export default function Home() {
         </div>
       </footer>
     </main>
+  )
+}
+
+// The intro as one paragraph, with a line break between its parts
+function IntroText() {
+  return (
+    <p className="label-text">
+      {site.intro.map((line, i) => (
+        <span key={i}>
+          {i > 0 && <br />}
+          {line}
+        </span>
+      ))}
+    </p>
   )
 }

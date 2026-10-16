@@ -172,8 +172,10 @@ html[data-intro] .home-intro {
   font-size: 0.78em;
   /* Full-height figures; Playfair's default ones sit low like lowercase */
   font-variant-numeric: lining-nums;
-  font-style: italic;
   opacity: 0.6;
+  transition:
+    color 400ms var(--ease),
+    opacity 400ms var(--ease);
 }
 
 .index-field {
@@ -196,8 +198,15 @@ html[data-intro] .home-intro {
   transform: translateX(clamp(6px, 0.9vw, 16px));
 }
 
+/* Hover colors for the number and field come from the active project's theme
+   (colors.field / colors.num in projects.js, see theme.js) */
 .index li.is-active .index-field {
-  color: var(--accent);
+  color: var(--field);
+}
+
+.index li.is-active .index-num {
+  color: var(--num, currentColor);
+  opacity: var(--num-opacity, 0.6);
 }
 
 /* ---------- Museum label ---------- */
@@ -235,7 +244,7 @@ html[data-intro] .home-intro {
 
 .label-field {
   font-size: 13px;
-  color: var(--accent);
+  color: var(--field);
   margin-top: -4px;
 }
 
@@ -243,28 +252,6 @@ html[data-intro] .home-intro {
   font-size: 13px;
   line-height: 1.5;
   opacity: 0.85;
-}
-
-.label-status {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  margin-top: 6px;
-  font-size: 13px;
-}
-
-.dot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: var(--accent);
-  animation: pulse 2.4s ease-in-out infinite;
-}
-
-@keyframes pulse {
-  50% {
-    opacity: 0.35;
-  }
 }
 
 /* ---------- Footer row ---------- */

@@ -4,7 +4,12 @@
 // Every project (featured or not) appears on the Work page.
 //
 // Colors: bg = page color while the project is active, ink = text color,
-// accent = small highlights.
+// accent = small highlights. Optional: field / num = colors of the field and
+// number next to the name on hover (default: accent / ink).
+//
+// coverShift (optional): slides the Home page image sideways, as a share of the
+// screen width (0.3 = 30% to the right, negative = left). Best for photos with
+// a plain background, since the uncovered edge repeats the photo's edge.
 //
 // Images: drop full-size photos into originals/<project>/, run `npm run images`,
 // then use the web copy from public/images/<project>/ (same name, .webp).
@@ -18,7 +23,7 @@ export const projects = [
       'Broken pottery bandaged with stiffened bio-plastic nets: a study of fragility, repair and imperfection.',
     year: 2025,
     cover: '/images/shattered-form/hero.webp',
-    colors: { bg: '#0d1a30', ink: '#f3e9d6', accent: '#8fb1ea' },
+    colors: { bg: '#0d1a30', ink: '#f3e9d6', accent: '#8fb1ea', num: '#BFBFBF', field: '#ffffff' },
     featured: true,
     order: 1,
   },
@@ -30,6 +35,7 @@ export const projects = [
       "A set of blocks to think with: an activity for men's circles, made for the fictional brand PYNK.",
     year: 2026,
     cover: '/images/facets/20260709_171556-copy-2red.webp',
+    coverShift: 0.06,
     colors: { bg: '#a9d5c3', ink: '#2a161c', accent: '#e0566b' },
     featured: true,
     order: 2,
@@ -42,7 +48,7 @@ export const projects = [
       'A swimming robot and docking unit that lets owners play with their fish and watch over the aquarium.',
     year: 2025,
     cover: '/images/gillbot/1fishew.webp',
-    colors: { bg: '#0e4862', ink: '#f8cdb0', accent: '#ff9c6e' },
+    colors: { bg: '#0e4862', ink: '#f8cdb0', accent: '#ff9c6e', field: '#78D7FF' },
     featured: true,
     order: 3,
   },
@@ -66,7 +72,8 @@ export const projects = [
       'Carved lapis feathers and an airy brass heart, after the Egyptian myth of the weighing of the heart.',
     year: 2026,
     cover: '/images/feather-weight/hero.webp',
-    colors: { bg: '#57b9f8', ink: '#1a0f2e', accent: '#c8103f' },
+    coverShift: 0.3,
+    colors: { bg: '#57b9f8', ink: '#1a0f2e', accent: '#c8103f', field: '#1b2f6e' },
     featured: true,
     order: 5,
   },
