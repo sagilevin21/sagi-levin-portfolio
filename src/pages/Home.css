@@ -1,0 +1,386 @@
+.home {
+  position: relative;
+  min-height: 100svh;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-rows: 1fr auto;
+  column-gap: var(--gutter);
+  padding: calc(var(--gutter) * 3.4) var(--gutter) var(--gutter);
+}
+
+/* ---------- Image behind the list ---------- */
+
+.home-backdrop {
+  position: fixed;
+  top: 13vh;
+  bottom: 13vh;
+  left: 30vw;
+  right: var(--gutter);
+  z-index: 0;
+  opacity: 0;
+  transform: scale(0.985);
+  transition:
+    opacity 450ms var(--ease),
+    transform 900ms var(--ease);
+  pointer-events: none;
+}
+
+.home-backdrop.is-on {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* Full-screen version: the image fills the window behind everything */
+.home-backdrop.is-full {
+  inset: 0;
+}
+
+/* Soft washes of the page color on the left (behind the names) and along the
+   bottom (behind the label and links) keep the type readable */
+.home-backdrop.is-full::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(
+      0deg,
+      color-mix(in srgb, var(--bg) 80%, transparent) 0%,
+      color-mix(in srgb, var(--bg) 40%, transparent) 14%,
+      transparent 30%
+    ),
+    linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--bg) 78%, transparent) 0%,
+      color-mix(in srgb, var(--bg) 50%, transparent) 40%,
+      transparent 72%
+    );
+}
+
+.glass {
+  position: absolute;
+  inset: 0;
+}
+
+.glass canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.glass img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transform: scale(1.04);
+  transition:
+    opacity 300ms var(--ease),
+    transform 900ms var(--ease);
+}
+
+.glass img.is-active {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* ---------- The index ---------- */
+
+.index {
+  position: relative;
+  z-index: 2;
+  grid-column: 1 / -1;
+  align-self: center;
+  list-style: none;
+  margin: 0;
+  padding: 0 0 calc(var(--gutter) * 1.5);
+}
+
+.index li {
+  /* Each row starts at a different point, like lines of a poem */
+  --indent: 0vw;
+  padding-left: var(--indent);
+  /* Entrance after the intro: rows rise in one after another */
+  transition:
+    opacity 900ms var(--ease) calc(var(--i, 0) * 90ms + 120ms),
+    transform 1100ms var(--ease) calc(var(--i, 0) * 90ms + 120ms);
+}
+
+/* Faintly visible through the intro's veil, then rising into place */
+html[data-intro] .index li {
+  opacity: 0.55;
+  transform: translateY(28px);
+}
+
+.label,
+.home-foot,
+.home-intro {
+  transition: opacity 900ms var(--ease) 600ms;
+}
+
+html[data-intro] .label,
+html[data-intro] .home-foot,
+html[data-intro] .home-intro {
+  opacity: 0.4;
+}
+
+.index li:nth-child(5n + 2) {
+  --indent: 16vw;
+}
+.index li:nth-child(5n + 3) {
+  --indent: 6vw;
+}
+.index li:nth-child(5n + 4) {
+  --indent: 24vw;
+}
+.index li:nth-child(5n + 5) {
+  --indent: 10vw;
+}
+
+.index a {
+  display: inline-flex;
+  align-items: flex-start;
+  gap: 0.6em;
+}
+
+.index-name {
+  font-size: clamp(44px, min(7.4vw, 10.5vh), 132px);
+  font-weight: 500;
+  line-height: 0.98;
+  letter-spacing: -0.045em;
+  white-space: nowrap;
+  transition:
+    opacity 450ms var(--ease),
+    transform 600ms var(--ease);
+}
+
+.index-meta {
+  transition: opacity 450ms var(--ease);
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding-top: 0.55em;
+  font-family: var(--serif);
+  font-size: 17px;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.index-num {
+  font-style: italic;
+  opacity: 0.6;
+}
+
+.index-field {
+  transition:
+    opacity 400ms var(--ease),
+    transform 500ms var(--ease);
+}
+
+/* While one project is active, the others fade back */
+.has-active .index li:not(.is-active) .index-name {
+  opacity: 0.22;
+}
+
+.has-active .index li:not(.is-active) .index-meta {
+  opacity: 0.3;
+}
+
+.index li.is-active .index-name {
+  transform: translateX(0.12em);
+}
+
+.index li.is-active .index-field {
+  color: var(--accent);
+}
+
+/* ---------- Museum label ---------- */
+
+.label {
+  position: relative;
+  z-index: 3;
+  align-self: end;
+  width: min(320px, 70vw);
+  /* Keep the height steady so the list doesn't jump between states */
+  min-height: 118px;
+  display: flex;
+  align-items: flex-end;
+}
+
+.label-inner {
+  display: grid;
+  gap: 6px;
+  animation: label-in 500ms var(--ease);
+}
+
+@keyframes label-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+
+.label-title {
+  font-size: 18px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  line-height: 1.1;
+}
+
+.label-field {
+  font-size: 13px;
+  color: var(--accent);
+  margin-top: -4px;
+}
+
+.label-text {
+  font-size: 13px;
+  line-height: 1.5;
+  opacity: 0.85;
+}
+
+.label-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+  font-size: 13px;
+}
+
+.dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--accent);
+  animation: pulse 2.4s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  50% {
+    opacity: 0.35;
+  }
+}
+
+/* ---------- Footer row ---------- */
+
+.home-foot {
+  position: relative;
+  z-index: 3;
+  align-self: end;
+  display: flex;
+  justify-content: flex-end;
+  align-items: baseline;
+  gap: clamp(20px, 3vw, 48px);
+  font-size: 14px;
+}
+
+.home-links {
+  display: flex;
+  gap: 20px;
+  opacity: 0.75;
+}
+
+.home-links a:hover,
+.home-all:hover {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.home-all sup {
+  font-size: 10px;
+  margin-left: 2px;
+}
+
+.home-intro {
+  display: none;
+}
+
+/* ---------- Phones and touch screens ---------- */
+
+@media (max-width: 760px), (hover: none) {
+  .home {
+    display: block;
+    padding: 0 var(--gutter);
+  }
+
+  .home-intro {
+    position: relative;
+    z-index: 3;
+    display: grid;
+    gap: 8px;
+    padding-top: 120px;
+    max-width: 34ch;
+  }
+
+  .home-intro .label-text {
+    font-size: 15px;
+  }
+
+  .label {
+    display: none;
+  }
+
+  .home-backdrop {
+    inset: 0;
+  }
+
+  /* Dim the image a little so the names stay readable */
+  .home-backdrop::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--bg);
+    opacity: 0.35;
+    transition: background-color var(--color-time) var(--ease);
+  }
+
+  .index {
+    padding: 34svh 0 50svh;
+  }
+
+  .index li {
+    padding-block: 6px;
+  }
+
+  .index li:nth-child(5n + 2) {
+    --indent: 8vw;
+  }
+  .index li:nth-child(5n + 3) {
+    --indent: 3vw;
+  }
+  .index li:nth-child(5n + 4) {
+    --indent: 12vw;
+  }
+  .index li:nth-child(5n + 5) {
+    --indent: 5vw;
+  }
+
+  .index a {
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .index-name {
+    font-size: clamp(40px, 12vw, 64px);
+    white-space: normal;
+  }
+
+  .index-meta {
+    flex-direction: row;
+    gap: 10px;
+    padding-top: 0;
+    font-size: 16px;
+  }
+
+  /* Names fade out as they slide under the bottom links */
+  .home-foot {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    justify-content: space-between;
+    padding: 56px var(--gutter) var(--gutter);
+    background: linear-gradient(to top, var(--bg) 45%, transparent);
+  }
+}
