@@ -12,7 +12,7 @@ export default function Header() {
   const isHome = pathname === '/'
 
   return (
-    <header className="site-header">
+    <header className={`site-header ${isHome ? '' : 'has-backdrop'}`}>
       <Link to="/" className="logo" aria-label={`${site.name}, home`}>
         <Logo />
       </Link>

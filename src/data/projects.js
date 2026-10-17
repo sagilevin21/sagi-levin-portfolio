@@ -47,6 +47,10 @@ export const projects = [
     summary:
       'A swimming robot and docking unit that lets owners play with their fish and watch over the aquarium.',
     year: 2025,
+    // Shown on the project page
+    team: ['Sagi Levin', 'Shirel Wagensberg'],
+    duration: 'Three months',
+    discipline: 'Pet care, smart system',
     cover: '/images/gillbot/1fishew.webp',
     colors: { bg: '#0e4862', ink: '#f8cdb0', accent: '#ff9c6e', field: '#78D7FF' },
     featured: true,

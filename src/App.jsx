@@ -5,6 +5,7 @@ import Ripple from './components/Ripple'
 import Intro from './components/Intro'
 import Home from './pages/Home'
 import ComingSoon from './pages/ComingSoon'
+import ProjectPage from './pages/ProjectPage'
 
 export default function App({ playIntro }) {
   const [showIntro, setShowIntro] = useState(playIntro)
@@ -16,7 +17,7 @@ export default function App({ playIntro }) {
         <Route path="/" element={<Home />} />
         <Route path="/work" element={<ComingSoon title="Work" />} />
         <Route path="/about" element={<ComingSoon title="About" />} />
-        <Route path="/projects/:slug" element={<ComingSoon />} />
+        <Route path="/projects/:slug" element={<ProjectPage />} />
         <Route path="*" element={<ComingSoon />} />
       </Routes>
       <Ripple />

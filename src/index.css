@@ -89,6 +89,12 @@ p {
   pointer-events: auto;
 }
 
+/* Pages that scroll content under the header: soft fade behind the menu */
+.site-header.has-backdrop {
+  padding-bottom: 36px;
+  background: linear-gradient(to bottom, var(--bg) 30%, transparent);
+}
+
 @media (max-width: 760px), (hover: none) {
   /* Content fades out as it scrolls under the header */
   .site-header {
