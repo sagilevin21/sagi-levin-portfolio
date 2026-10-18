@@ -1,0 +1,235 @@
+/* ---------- Opening (no photo yet: type only) ---------- */
+
+.f-hero {
+  --after: clamp(72px, 12vh, 140px);
+  min-height: calc(82svh - var(--after));
+  display: grid;
+  align-content: end;
+  gap: clamp(16px, 2vw, 28px);
+  padding: calc(var(--gutter) * 4) var(--gutter) 0;
+}
+
+/* ---------- The block board ---------- */
+
+.f-board {
+  padding: 0 var(--gutter) 10vh;
+}
+
+.board-wrap {
+  display: grid;
+  gap: 18px;
+  justify-items: start;
+}
+
+/* The table: a soft, slightly lighter surface with a paper grain */
+.board {
+  position: relative;
+  width: 100%;
+  height: min(86svh, 64vw);
+  min-height: 520px;
+  border-radius: 10px;
+  overflow: hidden;
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.3 0 0 0 0 0.25 0 0 0 0 0.25 0 0 0 0.06 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"),
+    radial-gradient(120% 90% at 50% 40%, #fbfaf7, #f1eee9);
+  box-shadow:
+    inset 0 0 0 1px rgba(42, 22, 28, 0.08),
+    0 30px 60px -30px rgba(42, 22, 28, 0.35);
+  touch-action: pan-y;
+  user-select: none;
+}
+
+/* The composition frame: the clear acrylic frame lying in the middle */
+.board-frame {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: var(--fmt, 40%);
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  object-fit: fill;
+  pointer-events: none;
+  user-select: none;
+  filter: drop-shadow(0 3px 5px rgba(42, 22, 28, 0.12));
+}
+/* A block: the photo, with a soft shadow on the table */
+.block {
+  position: absolute;
+  left: 0;
+  top: 0;
+  cursor: grab;
+  touch-action: none;
+  will-change: transform;
+}
+
+.block-turn {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.block img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 6px 8px rgba(42, 22, 28, 0.22)) drop-shadow(0 1px 2px rgba(42, 22, 28, 0.25));
+  transition: filter 300ms var(--ease), transform 300ms var(--ease);
+  pointer-events: none;
+}
+
+/* Picked up: lifted off the table, a deeper shadow */
+.block.is-held {
+  cursor: grabbing;
+  z-index: 5;
+}
+
+.block.is-held img {
+  transform: scale(1.06);
+  filter: drop-shadow(0 22px 22px rgba(42, 22, 28, 0.28)) drop-shadow(0 4px 6px rgba(42, 22, 28, 0.2));
+}
+
+/* Same look as the menu links: underline draws in on hover */
+.board-reset {
+  position: relative;
+  font: inherit;
+  font-size: 14px;
+  color: var(--ink);
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+
+.board-reset::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -2px;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 350ms var(--ease);
+}
+
+.board-reset:hover::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+/* ---------- The kit: one photo, edge to edge, a full screen tall ---------- */
+
+.f-kit {
+  margin: 0;
+  height: 100svh;
+  min-height: 480px;
+  overflow: hidden;
+}
+
+/* A little taller than its frame, so the slow drift never shows an edge */
+.f-kit img {
+  display: block;
+  width: 100%;
+  height: 112%;
+  margin-top: -6svh;
+  object-fit: cover;
+  object-position: 50% 62%;
+}
+
+/* ---------- The shirt: a pinned scene, scrolled through ---------- */
+
+.shirt {
+  position: relative;
+  height: 380svh;
+}
+
+.shirt-stage {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  overflow: hidden;
+}
+
+/* The mockup with the print laid over it; sized and scaled by ShirtZoom */
+.shirt-zoom {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  will-change: transform;
+}
+
+/* The photo's sides melt into the dark page */
+.shirt-mockup {
+  display: block;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 16%, #000 84%, transparent);
+  mask-image: linear-gradient(to right, transparent, #000 16%, #000 84%, transparent);
+}
+
+.shirt-print {
+  position: absolute;
+  object-fit: fill;
+  pointer-events: none;
+}
+
+.shirt-text {
+  position: absolute;
+  left: var(--gutter);
+  bottom: 12svh;
+  z-index: 1;
+}
+
+/* Narrow enough to stay clear of the walk in the middle */
+.shirt-line {
+  max-width: min(11.5em, calc(50vw - 28svh - var(--gutter) * 2));
+  margin: 12px 0 0;
+  font-size: clamp(22px, 2.2vw, 34px);
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+
+/* ---------- Phones ---------- */
+
+@media (max-width: 760px) {
+  /* A full portrait screen would cut off the tray or the composition, so
+     phones show the whole photo, edge to edge */
+  .f-kit {
+    height: auto;
+    min-height: 0;
+    aspect-ratio: 4 / 3;
+  }
+
+  .f-kit img {
+    margin-top: -6%;
+  }
+
+  /* The line sits on a soft dark fade over the photo */
+  .shirt-stage::after {
+    content: '';
+    position: absolute;
+    inset: auto 0 0;
+    height: 40%;
+    background: linear-gradient(to top, color-mix(in srgb, var(--bg) 85%, transparent), transparent);
+    pointer-events: none;
+  }
+
+  .shirt-text {
+    bottom: 8svh;
+    right: var(--gutter);
+    z-index: 2;
+  }
+
+  .shirt-line {
+    max-width: 16em;
+  }
+
+  .board {
+    height: 120vw;
+    min-height: 460px;
+  }
+
+}

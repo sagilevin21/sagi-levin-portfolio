@@ -6,6 +6,7 @@ import ComingSoon from './ComingSoon'
 // Projects without a page yet show "Coming soon".
 const pages = {
   gillbot: lazy(() => import('./projects/Gillbot')),
+  facets: lazy(() => import('./projects/Facets')),
 }
 
 export default function ProjectPage() {

@@ -34,6 +34,9 @@ export const projects = [
     summary:
       "A set of blocks to think with: an activity for men's circles, made for the fictional brand PYNK.",
     year: 2026,
+    team: ['Sagi Levin', 'Gilad Verbov'],
+    duration: 'Two months',
+    discipline: 'Social design, therapy',
     cover: '/images/facets/20260709_171556-copy-2red.webp',
     coverShift: 0.06,
     colors: { bg: '#a9d5c3', ink: '#2a161c', accent: '#e0566b' },

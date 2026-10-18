@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { Route, Routes } from 'react-router-dom'
+import { useLayoutEffect, useState } from 'react'
+import { Route, Routes, useLocation, useNavigationType } from 'react-router-dom'
 import Header from './components/Header'
 import Ripple from './components/Ripple'
 import Intro from './components/Intro'
@@ -8,9 +8,20 @@ import ComingSoon from './pages/ComingSoon'
 import ProjectPage from './pages/ProjectPage'
 import { useNoOrphans } from './noOrphans'
 
+// Following a link opens the new page at its top. The browser's back and
+// forward buttons are left alone, so they return to where you were.
+function useScrollToTop() {
+  const { pathname } = useLocation()
+  const navType = useNavigationType()
+  useLayoutEffect(() => {
+    if (navType !== 'POP') window.scrollTo({ top: 0, left: 0, behavior: 'instant' })
+  }, [pathname, navType])
+}
+
 export default function App({ playIntro }) {
   const [showIntro, setShowIntro] = useState(playIntro)
   useNoOrphans()
+  useScrollToTop()
 
   return (
     <>
