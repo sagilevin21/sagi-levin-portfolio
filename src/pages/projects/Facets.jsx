@@ -17,13 +17,22 @@ const PRINT = {
   alt: 'The shirt print: nine block compositions in teal, grey and white, signed facets 07\\26 and PYNK',
 }
 
-// box: where the print sits on the mockup photo (shares of its width/height)
-const MOCKUP = {
-  src: '/images/facets/shirt-mockup.webp',
-  alt: 'Someone wearing the black PYNK shirt, seen from the back, the Facets print across it',
-  ratio: 1728 / 2444,
-  box: { x: 0.2988, y: 0.3404, w: 0.411, h: 0.3335 },
-}
+// The same mockup framed wide (screens) and tall (phones). quad: the print's
+// corners on each photo (top-left, top-right, bottom-right, bottom-left as
+// x, y shares of its width/height), found by matching the print file
+// against the photo pixel by pixel
+const MOCKUPS = [
+  {
+    src: '/images/facets/shirt-mockup-wide.webp',
+    ratio: 1672 / 941,
+    quad: [0.4161, 0.3569, 0.5897, 0.3569, 0.5865, 0.7004, 0.4205, 0.7001],
+  },
+  {
+    src: '/images/facets/shirt-mockup.webp',
+    ratio: 1728 / 2444,
+    quad: [0.2978, 0.3357, 0.7107, 0.3354, 0.703, 0.6738, 0.3062, 0.6745],
+  },
+]
 
 // Work in progress: opening, the activity, the block board, the kit and the
 // shirt. More sections may come.
@@ -90,7 +99,13 @@ export default function Facets() {
       </figure>
 
       {/* ---- The shirt: the print alone, then the view pulls back to the shirt ---- */}
-      <ShirtZoom print={PRINT} mockup={MOCKUP} light={project.colors} dark={DARK}>
+      <ShirtZoom
+        print={PRINT}
+        mockups={MOCKUPS}
+        alt="Someone wearing the black PYNK shirt in an empty brick hall, seen from the back, the Facets print across it"
+        light={project.colors}
+        dark={DARK}
+      >
         <p className="label-kicker">The shirt</p>
         <p className="shirt-line">Nine block compositions, printed on the back of a PYNK shirt.</p>
       </ShirtZoom>

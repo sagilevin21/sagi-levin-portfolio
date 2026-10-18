@@ -152,27 +152,43 @@
   overflow: hidden;
 }
 
-/* The mockup with the print laid over it; sized and scaled by ShirtZoom */
+/* The mockup with the print laid over it; sized and moved by ShirtZoom */
 .shirt-zoom {
   position: absolute;
-  left: 50%;
-  top: 50%;
+  left: 0;
+  top: 0;
+  transform-origin: 0 0;
   will-change: transform;
 }
 
-/* The photo's sides melt into the dark page */
+/* The photo's sides melt softly into the dark page */
 .shirt-mockup {
+  --sides: linear-gradient(to right, transparent, rgba(0, 0, 0, 0.35) 12%, #000 30%, #000 70%, rgba(0, 0, 0, 0.35) 88%, transparent);
   display: block;
   width: 100%;
   height: 100%;
   opacity: 0;
-  -webkit-mask-image: linear-gradient(to right, transparent, #000 16%, #000 84%, transparent);
-  mask-image: linear-gradient(to right, transparent, #000 16%, #000 84%, transparent);
+  -webkit-mask-image: var(--sides);
+  mask-image: var(--sides);
 }
 
+/* Sized and warped onto the shirt by ShirtZoom */
 .shirt-print {
   position: absolute;
+  left: 0;
+  top: 0;
+  max-width: none;
   object-fit: fill;
+  transform-origin: 0 0;
+  pointer-events: none;
+}
+
+/* A soft dark wash behind the line, so it reads over the photo */
+.shirt-stage::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(70% 65% at 0% 100%, color-mix(in srgb, var(--bg) 78%, transparent), transparent 75%);
   pointer-events: none;
 }
 
@@ -180,7 +196,7 @@
   position: absolute;
   left: var(--gutter);
   bottom: 12svh;
-  z-index: 1;
+  z-index: 2;
 }
 
 /* Narrow enough to stay clear of the walk in the middle */
@@ -209,8 +225,6 @@
 
   /* The line sits on a soft dark fade over the photo */
   .shirt-stage::after {
-    content: '';
-    position: absolute;
     inset: auto 0 0;
     height: 40%;
     background: linear-gradient(to top, color-mix(in srgb, var(--bg) 85%, transparent), transparent);
