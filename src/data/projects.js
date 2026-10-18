@@ -52,7 +52,7 @@ export const projects = [
     duration: 'Three months',
     discipline: 'Pet care, smart system',
     cover: '/images/gillbot/1fishew.webp',
-    colors: { bg: '#0e4862', ink: '#f8cdb0', accent: '#ff9c6e', field: '#78D7FF' },
+    colors: { bg: '#0e4862', ink: '#eef4f5', accent: '#78D7FF', field: '#78D7FF' },
     featured: true,
     order: 3,
   },

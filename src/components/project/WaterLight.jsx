@@ -72,7 +72,10 @@ export default function WaterLight({ strengthRef }) {
       raf = requestAnimationFrame(frame)
       const strength = Math.max(0, Math.min(1, strengthRef.current ?? 1))
       canvas.style.opacity = (strength * MAX_OPACITY).toFixed(3)
-      if (strength <= 0.001 || document.hidden) return
+      // Fully off once faded out: a blended overlay costs even when invisible
+      const off = strength <= 0.001
+      if (off !== (canvas.style.display === 'none')) canvas.style.display = off ? 'none' : ''
+      if (off || document.hidden) return
       if (now - last < 33) return // ~30 fps is plenty for slow water light
       last = now
       gl.uniform1f(uT, still ? 4.0 : ((now - t0) / 1000) * 0.35 + 23.0)

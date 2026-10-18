@@ -3,8 +3,9 @@ import { getProject } from '../../data/projects'
 import { useTheme } from '../../theme'
 import { mixColors, useProjectScroll } from '../../components/project/useProjectScroll'
 import WaterLight from '../../components/project/WaterLight'
-import SwimmingRobot from '../../components/project/SwimmingRobot'
+import Aquarium from '../../components/project/Aquarium'
 import NextProject from '../../components/project/NextProject'
+import { useOpticalAlign } from '../../opticalAlign'
 import './project.css'
 import './Gillbot.css'
 
@@ -14,18 +15,19 @@ const img = (name) => `/images/gillbot/${name}.webp`
 const DEPTH = ['#0e4862', '#0b3a52', '#07263a', '#04161f']
 
 // Numbered points on the product photo (x / y in % of the image)
+// side: which side of the photo the label sits on
 const PARTS = [
-  { name: 'Interactive robot', x: 46, y: 11 },
-  { name: 'Sensor housing', x: 47, y: 47 },
-  { name: 'Docking unit', x: 72, y: 54 },
+  { name: 'Interactive robot', x: 55, y: 9, side: 'right' },
+  { name: 'Sensor housing', x: 47, y: 69, side: 'left' },
+  { name: 'Docking unit', x: 79, y: 41, side: 'right' },
 ]
 
 // Status light colors and what they mean
 const LIGHTS = [
-  { name: 'Alert', color: '#ff3d3d' },
-  { name: 'Charging', color: '#3aa8ff' },
-  { name: 'Idle', color: '#ffffff' },
-  { name: 'Fully charged', color: '#3dff8f' },
+  { name: 'Alert', color: '#ff3d3d', photo: 'status-alert' },
+  { name: 'Charging', color: '#3aa8ff', photo: 'status-charging' },
+  { name: 'Idle', color: '#ffffff', photo: 'status-idle' },
+  { name: 'Fully charged', color: '#3dff8f', photo: 'status-charged' },
 ]
 
 export default function Gillbot() {
@@ -33,6 +35,8 @@ export default function Gillbot() {
   useTheme(project.colors)
 
   const pageRef = useRef(null)
+  const titleRef = useRef(null)
+  useOpticalAlign(titleRef) // big title's first letter lines up with the text below
   const surfaceRef = useRef(1) // water light strength: full at the surface
   const onProgress = useCallback((p) => {
     document.documentElement.style.setProperty('--bg', mixColors(DEPTH, p))
@@ -50,7 +54,9 @@ export default function Gillbot() {
           <img src={img('underwater-two-fish')} alt="The Gillbot robot swimming underwater beside two fish" />
         </div>
         <div className="p-hero-text">
-          <h1 className="p-title p-enter">{project.title}</h1>
+          <h1 className="p-title p-enter" ref={titleRef}>
+            {project.title}
+          </h1>
           <p className="p-lede p-enter">A smart system to interact with your fish and monitor the aquarium.</p>
           <dl className="p-meta p-enter">
             <div>
@@ -79,21 +85,13 @@ export default function Gillbot() {
           Concept
         </p>
         <p className="p-statement-text" data-reveal>
-          The concept behind this project is to improve quality of life for pet fish, by strengthening the bond
-          between the fish and the owner.
+          To improve quality of life for pet fish, by strengthening the bond between the fish and the owner.
         </p>
       </section>
 
-      {/* ---- You're the fish ---- */}
+      {/* ---- You're the fish: an aquarium to steer the robot around ---- */}
       <section className="g-swim">
-        <SwimmingRobot src={img('robot-cutout')} model="/models/gillbot.glb" alt="The Gillbot robot" />
-        <div className="g-swim-caption">
-          <p className="label-kicker">Swim with them</p>
-          <p className="g-swim-hint">
-            <span className="hint-mouse">Move your cursor, the robot follows</span>
-            <span className="hint-touch">Tap anywhere, the robot follows</span>
-          </p>
-        </div>
+        <Aquarium robotSrc={img('robot-cutout')} robotModel="/models/gillbot.glb" scene={img('bp-scene')} />
       </section>
 
       {/* ---- The system ---- */}
@@ -106,6 +104,7 @@ export default function Gillbot() {
             The system features an interactive robot and a docking unit that doubles as housing for monitoring
             sensors that track water quality, all controlled by app interface.
           </p>
+          {/* Shown on phones, where the labels beside the photo are numbers only */}
           <ol className="g-parts" data-reveal>
             {PARTS.map((part, i) => (
               <li key={part.name}>
@@ -116,70 +115,91 @@ export default function Gillbot() {
           </ol>
         </div>
         <figure className="g-anatomy" data-reveal>
-          <img src={img('robot-on-dock')} alt="The Gillbot robot resting on its docking unit" loading="lazy" decoding="async" />
+          <div className="g-anatomy-frame">
+          <img src={img('cut-robot-on-dock')} alt="The Gillbot robot resting on its docking unit" loading="lazy" decoding="async" />
+          {/* Labels beside the product, each with a thin line to its part */}
           {PARTS.map((part, i) => (
-            <span key={part.name} className="g-marker g-marker-pin" style={{ left: `${part.x}%`, top: `${part.y}%` }}>
-              {i + 1}
+            <span
+              key={part.name}
+              className={`g-callout is-${part.side}`}
+              style={part.side === 'right' ? { left: `${part.x}%`, top: `${part.y}%` } : { right: `${100 - part.x}%`, top: `${part.y}%` }}
+            >
+              <span className="g-callout-dot" />
+              <span className="g-callout-line" />
+              <span className="g-callout-label">
+                <span className="g-marker">{i + 1}</span>
+                <span className="g-callout-name">{part.name}</span>
+              </span>
             </span>
           ))}
+          </div>
         </figure>
       </section>
 
-      {/* ---- Status light ---- */}
-      <StatusLight />
-
-      {/* ---- Design ---- */}
-      <section className="p-gallery">
-        <div className="p-gallery-head">
+      {/* ---- Design: one close-up, toned to the page's blues ---- */}
+      <section className="g-design">
+        <img
+          className="g-design-photo"
+          data-speed="0.05"
+          src={img('closeup-blue')}
+          alt="Close-up inside the dock: stone-like shell and blue glazed interior"
+          loading="lazy"
+          decoding="async"
+        />
+        <div className="g-design-text">
           <p className="label-kicker" data-reveal>
             Design
           </p>
-          <p className="p-body" data-reveal>
+          <p className="p-statement-text" data-reveal>
             The product&rsquo;s design mimics nature and blends in with the marine setting.
           </p>
         </div>
-        <div className="p-gallery-grid g-design">
-          <figure className="g-d1" data-reveal>
-            <img data-speed="0.04" src={img('dock-texture')} alt="Close-up of the dock's stone-like texture" loading="lazy" decoding="async" />
-          </figure>
-          <figure className="g-d2" data-reveal>
-            <img data-speed="-0.03" src={img('dock-inside')} alt="Inside the dock's blue glazed opening" loading="lazy" decoding="async" />
-          </figure>
-          <figure className="g-d3" data-reveal>
-            <img data-speed="0.05" src={img('dock-top')} alt="The dock seen from above" loading="lazy" decoding="async" />
-          </figure>
-          <figure className="g-d4" data-reveal>
-            <img data-speed="-0.02" src={img('dock-glaze')} alt="The dock's glazed interior" loading="lazy" decoding="async" />
-          </figure>
-        </div>
       </section>
+      {/* ---- Status light ---- */}
+      <StatusLight />
 
       {/* ---- App control ---- */}
       <AppControl />
-
-      {/* ---- In the tank, to scale ---- */}
-      <section className="p-pair">
-        <figure data-reveal>
-          <img src={img('in-room')} alt="An aquarium at home with the Gillbot dock inside" loading="lazy" decoding="async" />
-          <figcaption>In the tank</figcaption>
-        </figure>
-        <figure data-reveal>
-          <img src={img('in-hand')} alt="The Gillbot robot held in a hand, for scale" loading="lazy" decoding="async" />
-          <figcaption>To scale</figcaption>
-        </figure>
-      </section>
 
       <NextProject slug={project.slug} />
     </main>
   )
 }
 
-// Top-down photo of the dock; its ring light takes the color of the chosen
-// status. It cycles through them slowly until someone picks one.
+// The dial: a crescent like the dock's light strip (a circle's left side,
+// from 240° at the top round to 120° at the bottom), split into segments
+const ARC = { cx: 110, cy: 110, r: 95, from: 240, to: 120, gap: 4 }
+const arcPoint = (deg) => {
+  const a = (deg * Math.PI) / 180
+  return [ARC.cx + ARC.r * Math.cos(a), ARC.cy + ARC.r * Math.sin(a)]
+}
+function arcSegment(i, n) {
+  const step = (ARC.from - ARC.to) / n
+  const [x1, y1] = arcPoint(ARC.from - i * step - ARC.gap / 2)
+  const [x2, y2] = arcPoint(ARC.from - (i + 1) * step + ARC.gap / 2)
+  return `M${x1.toFixed(2)} ${y1.toFixed(2)} A${ARC.r} ${ARC.r} 0 0 0 ${x2.toFixed(2)} ${y2.toFixed(2)}`
+}
+// Where each label sits: beside the middle of its segment, following the curve
+// (as a share of the dial's viewBox: x 5–75, y 15–205)
+function labelSpot(i, n) {
+  const step = (ARC.from - ARC.to) / n
+  const [x, y] = arcPoint(ARC.from - (i + 0.5) * step)
+  return { '--x': ((x - 5) / 70).toFixed(3), top: `${(((y - 15) / 190) * 100).toFixed(1)}%` }
+}
+
+// Top-down photo of the dock; its arc-shaped light strip shows the color of
+// the chosen status. It cycles through them slowly until someone picks one.
 function StatusLight() {
   const [index, setIndex] = useState(0)
   const [picked, setPicked] = useState(false)
+  const [near, setNear] = useState(false) // load the photos once the section is close
   const ref = useRef(null)
+
+  useEffect(() => {
+    const io = new IntersectionObserver(([e]) => e.isIntersecting && setNear(true), { rootMargin: '100% 0px' })
+    io.observe(ref.current)
+    return () => io.disconnect()
+  }, [])
 
   useEffect(() => {
     if (picked) return
@@ -203,42 +223,65 @@ function StatusLight() {
 
   return (
     <section className="g-status" ref={ref}>
-      <figure className="g-status-media" data-reveal style={{ '--light': light.color }}>
-        <img src={img('top-down-light')} alt="The dock seen from above, its status light glowing" loading="lazy" decoding="async" />
-        <span className="g-status-tint" aria-hidden="true" />
-        <span className="g-status-glow" aria-hidden="true" />
-      </figure>
-      <div className="g-status-text">
+      {/* The photo fills the section. There's one version per light color
+          (the strip recolored ahead of time), and they cross-fade */}
+      <div className="g-status-media" role="img" aria-label={`The dock seen from above, its status light showing ${light.name.toLowerCase()}`}>
+        {LIGHTS.map((l, i) => (
+          <span
+            key={l.photo}
+            className={`g-status-photo ${i === index ? 'is-on' : ''}`}
+            style={near ? { backgroundImage: `url(${img(l.photo)})` } : undefined}
+          />
+        ))}
+      </div>
+      {/* The control echoes the dock's own light strip: an arc of the four
+          colors, the active one lit. The panel takes on a glow of that color. */}
+      <div className="g-status-panel" style={{ '--glow': light.color }}>
         <p className="label-kicker" data-reveal>
           Status light
         </p>
-        <p className="p-body" data-reveal>
-          A gentle indicator light lets the owner see the general status at all times.
+        <p className="g-status-now" aria-live="polite">
+          <span className="g-status-name" key={light.name}>
+            {light.name}
+          </span>
         </p>
-        <ul className="g-status-legend" data-reveal>
-          {LIGHTS.map((l, i) => (
-            <li key={l.name}>
-              <button
-                type="button"
+        <p className="p-body">A gentle indicator light lets the owner see the general status at all times.</p>
+        <div className="g-dial">
+          <svg className="g-dial-arc" viewBox="5 15 70 190" aria-hidden="true">
+            {LIGHTS.map((l, i) => (
+              <path
+                key={l.name}
+                d={arcSegment(i, LIGHTS.length)}
                 className={i === index ? 'is-on' : ''}
                 style={{ '--c': l.color }}
                 onMouseEnter={() => pick(i)}
-                onFocus={() => pick(i)}
                 onClick={() => pick(i)}
-                aria-pressed={i === index}
-              >
-                <span className="g-status-dot" />
-                {l.name}
-              </button>
-            </li>
-          ))}
-        </ul>
-      </div>
-    </section>
+              />
+            ))}
+          </svg>
+          <ul className="g-dial-labels">
+            {LIGHTS.map((l, i) => (
+              <li key={l.name} style={{ '--c': l.color, ...labelSpot(i, LIGHTS.length) }}>
+                <button
+                  type="button"
+                  className={i === index ? 'is-on' : ''}
+                  onMouseEnter={() => pick(i)}
+                  onFocus={() => pick(i)}
+                  onClick={() => pick(i)}
+                  aria-pressed={i === index}
+                >
+                  {l.name}
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>    </section>
   )
 }
 
-// The app's interface laid over a view of the tank
+// The app: the dashboard on an upright phone, and the live camera view on a
+// phone turned sideways (the way you'd hold it to steer the robot)
 function AppControl() {
   return (
     <section className="g-app">
@@ -250,56 +293,15 @@ function AppControl() {
           The user can swim, explore and interact with their fish, get live data, and set reminders.
         </p>
       </div>
-      <div className="g-app-view" data-reveal>
-        <img src={img('robot-with-fish')} alt="The Gillbot robot swimming among fish in an aquarium" loading="lazy" decoding="async" />
-        <div className="g-ui" aria-hidden="true">
-          <div className="g-ui-target">
-            <span className="g-ui-name">Pickle</span>
-          </div>
-          <div className="g-ui-live">
-            <span className="g-ui-icon">◉</span>
-            GillBot | Live | 92%
-          </div>
-          <div className="g-ui-pad">
-            <span>↑</span>
-            <span>←</span>
-            <span>→</span>
-            <span>↓</span>
-          </div>
-        </div>
-        {/* Over the image on wide screens, below it on phones */}
-        <div className="g-ui-card" aria-hidden="true">
-            <p className="g-ui-title">
-              Tank status | <b>Healthy</b>
-            </p>
-            <p className="g-ui-sub">Last test | 12:00</p>
-            <div className="g-ui-readings">
-              <span>
-                <b>24°C</b>Temp
-              </span>
-              <span>
-                <b>6.8</b>pH
-              </span>
-              <span>
-                <b>0.0</b>NH₃
-              </span>
-              <span>
-                <b>OK</b>Flow
-              </span>
-            </div>
-            <p className="g-ui-title g-ui-gap">My reminders</p>
-            <ul className="g-ui-list">
-              <li>
-                <b>Feeding</b> | Daily | next 20:00
-              </li>
-              <li>
-                <b>Water change</b> | Monthly
-              </li>
-              <li>
-                <b>Filter change</b> | Yearly
-              </li>
-            </ul>
-        </div>
+      <div className="g-phones">
+        <figure className="g-phone is-portrait" data-reveal>
+          <img src={img('iphone-16---1')} alt="The app's dashboard: tank status, the user's fish and reminders" loading="lazy" decoding="async" />
+          <figcaption>Dashboard</figcaption>
+        </figure>
+        <figure className="g-phone is-landscape" data-reveal style={{ transitionDelay: '150ms' }}>
+          <img src={img('iphone-16---2')} alt="The app's live camera view, steering the robot among the fish" loading="lazy" decoding="async" />
+          <figcaption>Live view and steering</figcaption>
+        </figure>
       </div>
     </section>
   )

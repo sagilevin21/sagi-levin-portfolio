@@ -6,9 +6,11 @@ import Intro from './components/Intro'
 import Home from './pages/Home'
 import ComingSoon from './pages/ComingSoon'
 import ProjectPage from './pages/ProjectPage'
+import { useNoOrphans } from './noOrphans'
 
 export default function App({ playIntro }) {
   const [showIntro, setShowIntro] = useState(playIntro)
+  useNoOrphans()
 
   return (
     <>

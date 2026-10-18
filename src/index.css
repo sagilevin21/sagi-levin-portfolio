@@ -58,6 +58,23 @@ p {
   margin: 0;
 }
 
+/* No orphan words, anywhere: paragraphs avoid a lone last word,
+   headings and big statements balance their lines */
+p,
+li,
+dd,
+figcaption {
+  text-wrap: pretty;
+}
+
+h1,
+h2,
+h3,
+.p-statement-text,
+.p-lede {
+  text-wrap: balance;
+}
+
 :focus-visible {
   outline: 1px solid var(--ink);
   outline-offset: 4px;

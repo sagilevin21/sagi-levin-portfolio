@@ -1,22 +1,79 @@
-/* ---------- Swim with them ---------- */
+/* ---------- The aquarium ---------- */
 
 .g-swim {
+  padding: 0 var(--gutter);
+}
+
+.tank {
   position: relative;
-  height: 100svh;
-  min-height: 560px;
+  height: min(88svh, 860px);
+  min-height: 520px;
+  border-radius: 6px;
   overflow: hidden;
+  isolation: isolate;
+  /* Glass edges */
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.16),
+    0 30px 80px -30px rgba(0, 0, 0, 0.6);
 }
 
 .swim-area {
   position: absolute;
   inset: 0;
   touch-action: manipulation;
+  cursor: crosshair;
 }
 
+/* The tank's insides */
+.tank-water {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: #0b3f84;
+}
+
+/* The drawn seafloor scene */
+.tank-backdrop {
+  position: absolute;
+  inset: 0;
+  background: center bottom / cover no-repeat;
+}
+
+/* Blueprint fish */
+.bp-fish {
+  position: absolute;
+  inset: 0;
+}
+
+.bp-fish-one {
+  position: absolute;
+  left: 0;
+  top: 0;
+  will-change: transform;
+}
+
+/* A very gentle, steady body wave */
+.bp-fish-one img {
+  display: block;
+  width: 100%;
+  transform-origin: 30% 50%;
+  animation: bp-swim 2.2s ease-in-out infinite alternate;
+}
+
+@keyframes bp-swim {
+  from {
+    transform: skewY(-0.5deg);
+  }
+  to {
+    transform: skewY(0.5deg);
+  }
+}
+/* The robot */
 .swim-body {
   position: absolute;
   left: 0;
   top: 0;
+  z-index: 3;
   width: clamp(84px, 9vw, 140px);
   pointer-events: none;
   user-select: none;
@@ -57,6 +114,14 @@
   opacity: 0;
   transition: opacity 500ms var(--ease);
 }
+
+.swim-bubbles {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+}
+
 .swim-bubbles span {
   position: absolute;
   border-radius: 50%;
@@ -77,43 +142,56 @@
   }
 }
 
-.g-swim-caption {
+/* The pane of glass in front: soft reflections and darker edges */
+.tank-glass {
   position: absolute;
-  left: var(--gutter);
-  bottom: calc(var(--gutter) * 1.5);
+  inset: 0;
+  z-index: 5;
   pointer-events: none;
-}
-
-.g-swim-hint {
-  font-family: var(--serif);
-  font-size: 18px;
-  opacity: 0.8;
-}
-
-.hint-touch {
-  display: none;
-}
-
-@media (hover: none) {
-  .hint-mouse {
-    display: none;
-  }
-  .hint-touch {
-    display: inline;
-  }
+  background:
+    linear-gradient(115deg, transparent 0 18%, rgba(255, 255, 255, 0.07) 19% 26%, transparent 27% 31%, rgba(255, 255, 255, 0.04) 32% 34%, transparent 35%),
+    linear-gradient(115deg, transparent 0 68%, rgba(255, 255, 255, 0.05) 69% 72%, transparent 73%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.012' numOctaves='3' seed='4'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.09 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  box-shadow:
+    inset 0 0 90px rgba(4, 22, 31, 0.55),
+    inset 0 1px 0 rgba(255, 255, 255, 0.35);
 }
 
 /* ---------- The system: labelled product photo ---------- */
 
+.gillbot .p-split {
+  --split: 3fr 9fr;
+  gap: clamp(32px, 4vw, 72px);
+  /* Text near the top of the photo, not floating at its middle */
+  align-items: start;
+}
+
+.gillbot .p-split-text {
+  padding-top: clamp(40px, 14vh, 140px);
+}
+
+.gillbot .p-split-text .p-body {
+  max-width: 30ch;
+}
+
 .g-anatomy {
-  position: relative;
+  /* Space beside the photo for the callout labels */
+  --label-room: 160px;
   margin: 0;
-  background: #fff;
+  padding: 0 var(--label-room);
+}
+
+.g-anatomy-frame {
+  position: relative;
+  width: fit-content;
+  margin: 0 auto;
 }
 
 .g-anatomy img {
   display: block;
-  width: 100%;
+  max-width: 100%;
+  max-height: 88vh;
+  filter: drop-shadow(0 30px 40px rgba(0, 0, 0, 0.35));
 }
 
 /* Numbered markers: on the photo, and in the list beside it */
@@ -125,31 +203,66 @@
   border-radius: 50%;
   font-size: 12px;
   font-weight: 500;
-  background: var(--ink);
-  color: var(--bg);
+  background: var(--accent);
+  color: #06212c;
   flex: none;
 }
 
-.g-marker-pin {
+/* Callouts: a small dot on the part, a thin line out to the side of the
+   photo, and the label there. The line always reaches past the photo's edge. */
+.g-callout {
   position: absolute;
-  transform: translate(-50%, -50%);
-  background: #0e3445;
-  color: #fff;
-  box-shadow: 0 0 0 6px rgba(255, 255, 255, 0.6);
-  animation: pin-pulse 2.8s ease-in-out infinite;
+  display: flex;
+  align-items: center;
+  transform: translateY(-50%);
+  pointer-events: none;
 }
 
-@keyframes pin-pulse {
-  50% {
-    box-shadow: 0 0 0 10px rgba(255, 255, 255, 0.25);
-  }
+.g-callout.is-right {
+  right: calc(var(--label-room) * -1);
+}
+
+.g-callout.is-left {
+  left: calc(var(--label-room) * -1);
+  flex-direction: row-reverse;
+}
+
+.g-callout-dot {
+  flex: none;
+  width: 7px;
+  height: 7px;
+  margin: 0 -3.5px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 25%, transparent);
+}
+
+.g-callout-line {
+  flex: 1;
+  min-width: 24px;
+  height: 1px;
+  background: color-mix(in srgb, var(--accent) 70%, transparent);
+}
+
+.g-callout-label {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 12px;
+  font-size: 15px;
+  white-space: nowrap;
+}
+
+.g-callout.is-left .g-callout-label {
+  flex-direction: row-reverse;
 }
 
 .g-parts {
+  display: none;
   list-style: none;
   margin: 28px 0 0;
   padding: 0;
-  display: grid;
   gap: 12px;
   font-size: 16px;
 }
@@ -159,407 +272,320 @@
   align-items: center;
   gap: 12px;
 }
+
 /* ---------- Status light ---------- */
 
-@property --light {
+.g-status {
+  position: relative;
+  height: min(100svh, 56vw);
+  min-height: 480px;
+  overflow: hidden;
+  /* Where the photo is anchored: keeps the dock (left side) in view */
+  --pos: 0% 50%;
+}
+
+.g-status-media,
+.g-status-media > span {
+  position: absolute;
+  inset: 0;
+}
+
+.g-status-photo {
+  background: var(--bg) var(--pos) / cover no-repeat;
+  opacity: 0;
+  transition: opacity 900ms var(--ease);
+}
+
+.g-status-photo.is-on {
+  opacity: 1;
+}
+/* Text and the light picker, floating over the photo. --glow is the active
+   light's color; it's animatable, so the panel's glow fades between colors. */
+@property --glow {
   syntax: '<color>';
   inherits: true;
   initial-value: #ff3d3d;
 }
 
-.g-status {
-  display: grid;
-  grid-template-columns: 7fr 5fr;
-  gap: clamp(32px, 6vw, 96px);
-  align-items: center;
-  padding: 12vh var(--gutter);
-}
-
-.g-status-media {
-  position: relative;
-  margin: 0;
-  overflow: hidden;
-  transition: --light 900ms var(--ease);
-}
-
-.g-status-media img {
-  display: block;
-  width: 100%;
-}
-
-/* Recolors the ring around the dock's opening… */
-.g-status-tint,
-.g-status-glow {
+.g-status-panel {
   position: absolute;
-  inset: 0;
-  pointer-events: none;
+  right: var(--gutter);
+  bottom: calc(var(--gutter) * 1.5);
+  width: min(400px, calc(100% - var(--gutter) * 2));
+  padding: 26px 28px 28px;
+  border-radius: 18px;
+  /* Solid tint rather than a blur: a blur behind it would slow scrolling */
+  background:
+    radial-gradient(110% 80% at 0% 72%, color-mix(in srgb, var(--glow) 20%, transparent), transparent 62%),
+    linear-gradient(160deg, rgba(10, 44, 60, 0.9), rgba(4, 20, 29, 0.92));
+  border: 1px solid color-mix(in srgb, var(--glow) 28%, rgba(120, 215, 255, 0.12));
+  box-shadow:
+    0 30px 60px -24px rgba(0, 0, 0, 0.6),
+    0 0 50px -18px color-mix(in srgb, var(--glow) 45%, transparent);
+  transition: --glow 900ms var(--ease);
 }
 
-.g-status-tint {
-  background: radial-gradient(
-    ellipse 7.6% 13.6% at 15.8% 49.6%,
-    transparent 58%,
-    var(--light) 66%,
-    var(--light) 86%,
-    transparent 100%
-  );
-  mix-blend-mode: color;
+/* Current status, large, in a soft version of its color */
+.g-status-now {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  margin: 4px 0 10px;
 }
 
-/* …and adds a soft glow around it */
-.g-status-glow {
-  background: radial-gradient(
-    ellipse 11% 19.6% at 15.8% 49.6%,
-    transparent 30%,
-    color-mix(in srgb, var(--light) 55%, transparent) 50%,
-    transparent 100%
-  );
-  mix-blend-mode: screen;
-  opacity: 0.55;
+.g-status-name {
+  font-size: clamp(30px, 2.6vw, 40px);
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  color: color-mix(in srgb, var(--glow) 50%, var(--ink));
+  animation: status-in 600ms var(--ease);
 }
 
-.g-status-legend {
+@keyframes status-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+.g-status-panel .p-body {
+  font-size: 15px;
+  opacity: 0.8;
+}
+
+/* The dial: an arc of the four colors with labels following its curve */
+.g-dial {
+  position: relative;
+  height: 168px;
+  margin-top: 20px;
+  --dial-w: calc(168px * 70 / 190);
+}
+
+.g-dial-arc {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  overflow: visible;
+}
+
+.g-dial-arc path {
+  fill: none;
+  stroke: var(--c);
+  stroke-width: 9;
+  /* Flat ends with a small gap, so segments never overlap */
+  stroke-linecap: butt;
+  opacity: 0.25;
+  cursor: pointer;
+  transition:
+    opacity 500ms var(--ease),
+    stroke-width 500ms var(--ease),
+    filter 500ms var(--ease);
+}
+
+.g-dial-arc path.is-on {
+  opacity: 1;
+  stroke-width: 11;
+  filter: drop-shadow(0 0 5px var(--c)) drop-shadow(0 0 12px color-mix(in srgb, var(--c) 60%, transparent));
+}
+
+.g-dial-labels {
   list-style: none;
-  margin: 28px 0 0;
+  margin: 0;
   padding: 0;
-  display: grid;
-  gap: 4px;
 }
 
-.g-status-legend button {
+.g-dial-labels li {
+  position: absolute;
+  /* Follows the curve: further right where the arc bends right */
+  left: calc(var(--dial-w) * var(--x) + 22px);
+  transform: translateY(-50%);
+}
+
+.g-dial-labels button {
   display: inline-flex;
   align-items: center;
-  gap: 12px;
-  padding: 6px 0;
+  gap: 10px;
+  padding: 4px 0;
   font: inherit;
-  font-size: 16px;
+  font-size: 15px;
   color: inherit;
   background: none;
   border: 0;
   cursor: pointer;
-  opacity: 0.55;
-  transition: opacity 400ms var(--ease);
+  opacity: 0.45;
+  transition:
+    opacity 400ms var(--ease),
+    transform 500ms var(--ease);
 }
 
-.g-status-legend button.is-on {
+.g-dial-labels button::before {
+  content: '';
+  width: 14px;
+  height: 1px;
+  background: var(--c);
+  opacity: 0.6;
+  transition: width 500ms var(--ease);
+}
+
+.g-dial-labels button.is-on {
+  opacity: 1;
+  transform: translateX(4px);
+}
+
+.g-dial-labels button.is-on::before {
+  width: 24px;
   opacity: 1;
 }
-
-.g-status-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: var(--c);
-  transition: box-shadow 500ms var(--ease);
-}
-
-.g-status-legend button.is-on .g-status-dot {
-  box-shadow:
-    0 0 10px 2px var(--c),
-    0 0 26px 4px color-mix(in srgb, var(--c) 50%, transparent);
-}
-
-/* ---------- Design gallery ---------- */
+/* ---------- Design: a full-width close-up with the text over it ---------- */
 
 .g-design {
-  display: grid;
-  grid-template-columns: repeat(12, 1fr);
-  gap: var(--gutter);
-}
-
-.g-d1 {
-  grid-column: 1 / 8;
-  aspect-ratio: 4 / 3;
-}
-
-.g-d2 {
-  grid-column: 8 / 13;
-  aspect-ratio: 1;
-  margin-top: 14vh;
-}
-
-.g-d3 {
-  grid-column: 2 / 7;
-  aspect-ratio: 4 / 3;
-}
-
-.g-d4 {
-  grid-column: 7 / 12;
-  aspect-ratio: 4 / 3;
-  margin-top: -6vh;
-}
-
-/* ---------- App control ---------- */
-
-.g-app {
-  padding: 12vh var(--gutter);
-  --ui: #f2e6a3;
-}
-
-.g-app-text {
-  margin-bottom: 6vh;
-}
-
-.g-app-view {
   position: relative;
+  height: min(100svh, 70vw);
+  min-height: 460px;
+  overflow: hidden;
+  display: flex;
+  align-items: flex-end;
 }
 
-.g-app-view > img {
-  display: block;
+.g-design-photo {
+  position: absolute;
+  inset: -6% 0;
   width: 100%;
-  aspect-ratio: 1456 / 816;
+  height: 112%;
   object-fit: cover;
+  object-position: 40% 50%;
 }
 
-.g-ui {
+/* Melts into the page above and below, and darkens behind the text */
+.g-design::after {
+  content: '';
   position: absolute;
   inset: 0;
+  background:
+    linear-gradient(to bottom, var(--bg), transparent 18%, transparent 72%, var(--bg)),
+    linear-gradient(to right, color-mix(in srgb, var(--bg) 70%, transparent), transparent 55%);
   pointer-events: none;
 }
 
-/* Interface pieces appear one after another once the view is on screen */
-.g-ui > *,
-.g-ui-card {
-  opacity: 0;
-  transform: translateY(8px);
-  transition:
-    opacity 700ms var(--ease),
-    transform 900ms var(--ease);
+.g-design-text {
+  position: relative;
+  z-index: 1;
+  padding: 0 var(--gutter) 12vh;
+}
+/* ---------- App control: the mockups as two iPhones ---------- */
+
+.g-app {
+  display: grid;
+  grid-template-columns: 4fr 8fr;
+  gap: clamp(32px, 5vw, 80px);
+  align-items: center;
+  padding: 12vh var(--gutter);
 }
 
-.g-app-view.is-in .g-ui > *,
-.g-app-view.is-in .g-ui-card {
-  opacity: 1;
-  transform: none;
+.g-phones {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: clamp(20px, 3vw, 48px);
 }
 
-.g-app-view.is-in .g-ui-target {
-  transition-delay: 400ms;
-}
-.g-app-view.is-in .g-ui-live {
-  transition-delay: 650ms;
-}
-.g-app-view.is-in .g-ui-pad {
-  transition-delay: 800ms;
-}
-.g-app-view.is-in .g-ui-card {
-  transition-delay: 1000ms;
+.g-phone {
+  margin: 0;
 }
 
-/* Camera viewfinder brackets around a fish */
-.g-ui-target {
-  position: absolute;
-  left: 57%;
-  top: 20%;
-  width: 11%;
-  height: 13%;
-  --b: 1.5px;
-  --l: 16px;
-  background:
-    linear-gradient(var(--ui) 0 0) left top / var(--l) var(--b),
-    linear-gradient(var(--ui) 0 0) left top / var(--b) var(--l),
-    linear-gradient(var(--ui) 0 0) right top / var(--l) var(--b),
-    linear-gradient(var(--ui) 0 0) right top / var(--b) var(--l),
-    linear-gradient(var(--ui) 0 0) left bottom / var(--l) var(--b),
-    linear-gradient(var(--ui) 0 0) left bottom / var(--b) var(--l),
-    linear-gradient(var(--ui) 0 0) right bottom / var(--l) var(--b),
-    linear-gradient(var(--ui) 0 0) right bottom / var(--b) var(--l);
-  background-repeat: no-repeat;
+/* iPhone look: rounded corners (about 14% of the short side, like the real
+   screen), a thin dark bezel, a soft edge highlight and a shadow */
+.g-phone img {
+  display: block;
+  border-radius: var(--radius);
+  border: clamp(5px, 0.55vw, 8px) solid #0c0d0f;
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.14),
+    0 40px 70px -30px rgba(0, 0, 0, 0.7),
+    0 18px 30px -18px rgba(0, 0, 0, 0.5);
+  background: #0c0d0f;
 }
 
-.g-ui-name {
-  position: absolute;
-  left: 0;
-  top: calc(100% + 6px);
+.g-phone.is-portrait img {
+  /* The mockups are 1x (393 × 852): kept near that size so they stay sharp */
+  height: min(70vh, 640px);
+  aspect-ratio: 393 / 852;
+  --radius: calc(min(70vh, 640px) * 393 / 852 * 0.14);
+}
+
+.g-phone.is-landscape img {
+  width: min(44vw, 640px);
+  aspect-ratio: 852 / 393;
+  --radius: calc(min(44vw, 640px) * 393 / 852 * 0.14);
+}
+
+.g-phone figcaption {
+  margin-top: 14px;
   font-size: 11px;
   letter-spacing: 0.12em;
-  color: #fff;
-}
-
-.g-ui-live {
-  position: absolute;
-  left: 3%;
-  bottom: 6%;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 12px;
-  letter-spacing: 0.08em;
-  color: #fff;
-}
-
-.g-ui-icon {
-  display: grid;
-  place-items: center;
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.22);
-  backdrop-filter: blur(6px);
-  font-size: 12px;
-}
-
-.g-ui-pad {
-  position: absolute;
-  right: 3.5%;
-  bottom: 6%;
-  display: grid;
-  grid-template-columns: repeat(3, 34px);
-  grid-template-rows: repeat(3, 34px);
-  gap: 4px;
-}
-
-.g-ui-pad span {
-  display: grid;
-  place-items: center;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.24);
-  backdrop-filter: blur(6px);
-  color: #fff;
-  font-size: 14px;
-}
-
-.g-ui-pad span:nth-child(1) {
-  grid-area: 1 / 2;
-}
-.g-ui-pad span:nth-child(2) {
-  grid-area: 2 / 1;
-}
-.g-ui-pad span:nth-child(3) {
-  grid-area: 2 / 3;
-}
-.g-ui-pad span:nth-child(4) {
-  grid-area: 3 / 2;
-}
-
-/* Dashboard card */
-.g-ui-card {
-  position: absolute;
-  left: 3%;
-  top: 6%;
-  width: clamp(230px, 22vw, 300px);
-  padding: 16px 18px;
-  border-radius: 14px;
-  background: rgba(20, 22, 24, 0.62);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  color: #eceae4;
-  font-size: 12px;
-  line-height: 1.5;
-}
-
-.g-ui-title {
-  font-size: 14px;
-  padding-bottom: 6px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.18);
-}
-
-.g-ui-title b {
-  font-weight: 500;
-  color: #5fdc6c;
-}
-
-.g-ui-gap {
-  margin-top: 14px;
-}
-
-.g-ui-sub {
-  margin-top: 4px;
-  opacity: 0.7;
-}
-
-.g-ui-readings {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  margin-top: 12px;
+  text-transform: uppercase;
+  color: var(--accent);
   text-align: center;
-  opacity: 0.85;
 }
-
-.g-ui-readings b {
-  display: block;
-  font-size: 16px;
-  font-weight: 400;
-  color: #fff;
-}
-
-.g-ui-list {
-  list-style: none;
-  margin: 8px 0 0;
-  padding: 0;
-  display: grid;
-  gap: 4px;
-  opacity: 0.85;
-}
-
-.g-ui-list b {
-  font-weight: 500;
-  color: var(--ui);
-}
-
 /* ---------- Phones ---------- */
 
 @media (max-width: 760px) {
-  .g-swim {
-    height: 85svh;
+  .tank {
+    height: 78svh;
+    min-height: 460px;
   }
 
   .g-status {
+    height: auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    /* Centre on the dock on narrow screens */
+    --pos: 14% 50%;
+  }
+
+  .g-status-media {
+    position: relative;
+    height: 62svh;
+  }
+
+  .g-status-panel {
+    position: relative;
+    right: auto;
+    bottom: auto;
+    width: auto;
+    margin: -60px var(--gutter) 0;
+    padding: 22px 22px 24px;
+  }
+
+  .g-design {
+    height: 80svh;
+  }
+
+  .g-app {
     grid-template-columns: 1fr;
     padding: 8vh var(--gutter);
   }
 
-  .g-design {
-    grid-template-columns: 1fr 1fr;
+  .g-phones {
+    flex-direction: column;
+    align-items: center;
+    gap: 36px;
   }
 
-  .g-d1 {
-    grid-column: 1 / -1;
-  }
-  .g-d2 {
-    grid-column: 1 / 2;
-    margin-top: 0;
-  }
-  .g-d3 {
-    grid-column: 2 / 3;
-    aspect-ratio: 1;
-    margin-top: 6vh;
-  }
-  .g-d4 {
-    grid-column: 1 / -1;
-    margin-top: 0;
+  .g-phone.is-portrait img {
+    height: auto;
+    width: 62vw;
+    --radius: calc(62vw * 0.14);
   }
 
-  .g-app {
-    padding: 8vh var(--gutter);
+  .g-phone.is-landscape img {
+    width: calc(100vw - var(--gutter) * 2);
+    --radius: calc((100vw - var(--gutter) * 2) * 393 / 852 * 0.14);
   }
-
-  .g-ui-pad {
-    grid-template-columns: repeat(3, 24px);
-    grid-template-rows: repeat(3, 24px);
-    gap: 2px;
-  }
-
-  .g-ui-pad span {
-    font-size: 10px;
-  }
-
-  .g-ui-live {
-    font-size: 10px;
-  }
-
-  .g-ui-icon {
-    width: 22px;
-    height: 22px;
-  }
-
-  .g-ui-card {
-    position: static;
-    width: auto;
-    margin-top: 12px;
-  }
-
-  .g-marker-pin {
+  .g-marker {
     width: 22px;
     height: 22px;
     font-size: 11px;

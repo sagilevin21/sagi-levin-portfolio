@@ -18,7 +18,11 @@ const SIDE_VIEW = 0.5 // radians: how far it turns its face toward you while swi
 //
 // With `model` it's the real 3D robot (front = +x); until that loads, or if
 // 3D isn't available, it's the photo `src`, which faces left and is mirrored.
-export default function SwimmingRobot({ src, model, alt = '' }) {
+//
+// `children` are drawn behind the robot and `front` in front of it (scenery);
+// `posRef.current` is kept at its position, so others (fish) can react to it;
+// `floor` (0–1) keeps it above that share of the height, e.g. above the sand.
+export default function SwimmingRobot({ src, model, alt = '', children, front, posRef, floor = 1 }) {
   const areaRef = useRef(null)
   const bodyRef = useRef(null)
   const bubblesRef = useRef(null)
@@ -49,7 +53,7 @@ export default function SwimmingRobot({ src, model, alt = '' }) {
     const setTarget = (e) => {
       const b = box()
       target.x = Math.min(b.width, Math.max(0, e.clientX - b.left))
-      target.y = Math.min(b.height, Math.max(0, e.clientY - b.top))
+      target.y = Math.min(b.height * floor, Math.max(0, e.clientY - b.top))
       lastInput = performance.now()
     }
     // While a mouse is over the section, the robot stays with it, even if the
@@ -89,13 +93,14 @@ export default function SwimmingRobot({ src, model, alt = '' }) {
       if (!mouseInside && now - lastInput > IDLE_AFTER) {
         const t = now / 1000
         target.x = w * (0.5 + 0.32 * Math.sin(t * 0.37))
-        target.y = h * (0.5 + 0.22 * Math.sin(t * 0.61 + 1.2))
+        target.y = h * floor * (0.5 + 0.22 * Math.sin(t * 0.61 + 1.2))
       }
 
       vel.x = (vel.x + (target.x - pos.x) * FOLLOW * dt) * Math.pow(DRAG, dt)
       vel.y = (vel.y + (target.y - pos.y) * FOLLOW * dt) * Math.pow(DRAG, dt)
       pos.x += vel.x * dt
       pos.y += vel.y * dt
+      if (posRef) posRef.current = { x: pos.x, y: pos.y, vx: vel.x, vy: vel.y }
 
       // Turn around only when the target is clearly on the other side and it's
       // heading there, so overshooting a little doesn't make it flip back and forth
@@ -151,10 +156,11 @@ export default function SwimmingRobot({ src, model, alt = '' }) {
       area.removeEventListener('pointerdown', onDown)
       window.removeEventListener('resize', onResize)
     }
-  }, [])
+  }, [floor, posRef])
 
   return (
     <div className="swim-area" ref={areaRef}>
+      {children}
       <div className="swim-bubbles" ref={bubblesRef} aria-hidden="true" />
       <div ref={bodyRef} className={`swim-body ${model ? 'has-model' : ''} ${modelReady ? 'model-ready' : ''}`}>
         <img className="swim-photo" src={src} alt={alt} draggable="false" />
@@ -164,6 +170,7 @@ export default function SwimmingRobot({ src, model, alt = '' }) {
           </Suspense>
         )}
       </div>
+      {front}
     </div>
   )
 }
