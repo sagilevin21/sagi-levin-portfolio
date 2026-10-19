@@ -22,6 +22,9 @@ export const projects = [
     summary:
       'Broken pottery bandaged with stiffened bio-plastic nets: a study of fragility, repair and imperfection.',
     year: 2025,
+    team: ['Sagi Levin', 'Yarden Verbov', 'Gilad Verbov', 'Adir Rubin', 'Oriyah Mazuz'],
+    duration: 'One week',
+    discipline: 'Material study, conceptual art',
     cover: '/images/shattered-form/hero.webp',
     colors: { bg: '#0d1a30', ink: '#f3e9d6', accent: '#8fb1ea', num: '#BFBFBF', field: '#ffffff' },
     featured: true,
@@ -31,8 +34,7 @@ export const projects = [
     slug: 'facets',
     title: 'Facets by PYNK',
     field: 'Social design',
-    summary:
-      "A set of blocks to think with: an activity for men's circles, made for the fictional brand PYNK.",
+    summary: '“Things to think with”: a tactile and expressive experience for men’s circles.',
     year: 2026,
     team: ['Sagi Levin', 'Gilad Verbov'],
     duration: 'Two months',

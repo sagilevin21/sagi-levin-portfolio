@@ -1,0 +1,212 @@
+/* ---------- In the dark: the spotlight, a full screen ---------- */
+
+.sf-spot {
+  position: relative;
+  height: 100svh;
+  min-height: 520px;
+}
+
+.sf-spot .spotlight {
+  position: absolute;
+  inset: 0;
+}
+
+/* ---------- The spotlight (SpotlightPhoto) ---------- */
+
+.spotlight {
+  overflow: hidden;
+  touch-action: pan-y;
+}
+
+/* Where the photo sits: the whole area by default */
+.spotlight-frame {
+  position: absolute;
+  inset: 0;
+}
+
+.spotlight-frame img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 62%;
+}
+
+/* The photo's top and bottom melt into the page, like the close-up on the
+   Gillbot page */
+.spotlight-frame::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(to bottom, var(--bg), transparent 18%, transparent 82%, var(--bg));
+}
+
+/* The room with the lights off: only just there */
+.spotlight-dark {
+  filter: brightness(0.17) saturate(0.5);
+}
+
+/* The lit scene, seen only inside a soft pool of light */
+.spotlight-lit {
+  -webkit-mask-image: radial-gradient(
+    circle var(--r, 240px) at var(--x, 50%) var(--y, 60%),
+    #000 0%,
+    rgba(0, 0, 0, 0.82) 38%,
+    rgba(0, 0, 0, 0.3) 70%,
+    transparent 100%
+  );
+  mask-image: radial-gradient(
+    circle var(--r, 240px) at var(--x, 50%) var(--y, 60%),
+    #000 0%,
+    rgba(0, 0, 0, 0.82) 38%,
+    rgba(0, 0, 0, 0.3) 70%,
+    transparent 100%
+  );
+}
+
+
+/* ---------- The concept ---------- */
+
+.p-statement .sf-concept {
+  max-width: 30ch;
+}
+
+/* ---------- Material study: two photos and the story ---------- */
+
+.sf-study {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  column-gap: var(--gutter);
+  row-gap: 8vh;
+  padding: 4vh var(--gutter) 14vh;
+}
+
+.sf-step {
+  margin: 0;
+}
+
+.sf-photo {
+  position: relative;
+  aspect-ratio: var(--ar, 16 / 9);
+  overflow: hidden;
+  border-radius: 4px;
+}
+
+.sf-photo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.sf-step figcaption {
+  margin-top: 12px;
+  font-size: 13px;
+  opacity: 0.8;
+}
+
+/* Two photos on one line, the same height: each takes width in proportion
+   to its shape */
+.sf-row {
+  grid-column: 1 / -1;
+  display: flex;
+  gap: var(--gutter);
+  align-items: flex-start;
+}
+
+.is-coat {
+  flex: 1.778 1 0;
+}
+
+.is-net {
+  flex: 1.25 1 0;
+  --ar: 5 / 4;
+}
+
+.sf-study-text {
+  grid-column: 2 / 7;
+  display: grid;
+  gap: 1em;
+}
+
+.sf-study-text .p-body {
+  margin: 0;
+}
+
+.sf-study-text .label-kicker {
+  margin-bottom: 0;
+}
+
+/* ---------- The pieces: half and half, a full screen ---------- */
+
+.sf-pieces {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  height: 100svh;
+  min-height: 480px;
+}
+
+.sf-piece {
+  margin: 0;
+  overflow: hidden;
+}
+
+.sf-piece img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* The red vessel sits in the left half of its photo: crop around it, not
+   around the photo's middle, so it stays whole on every screen */
+.sf-piece.is-red img {
+  object-position: 13% 50%;
+}
+
+/* ---------- Phones ---------- */
+
+@media (max-width: 760px) {
+  /* A tall screen would crop the side cups away: the photo shows a little
+     wider than the screen instead, centred, so all three cups stay in view */
+  .sf-spot .spotlight-frame {
+    inset: auto;
+    left: 50%;
+    top: 50%;
+    /* Never taller than the section, so its soft top and bottom always show */
+    width: min(170%, calc(max(100svh, 520px) * 1.294));
+    aspect-ratio: 1988 / 1536;
+    transform: translate(-50%, -50%);
+  }
+
+  .sf-spot .spotlight-frame img {
+    object-position: 50% 50%;
+  }
+
+  .sf-study {
+    row-gap: 6vh;
+  }
+
+  .sf-row {
+    flex-direction: column;
+    gap: 6vh;
+  }
+
+  .is-coat,
+  .is-net {
+    flex: none;
+    width: 100%;
+  }
+
+  .sf-study-text {
+    grid-column: 1 / -1;
+  }
+
+  /* Stacked: each cup half the screen's height */
+  .sf-pieces {
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr 1fr;
+  }
+}

@@ -20,6 +20,10 @@ const PULL = [0.04, 0.8] // the view pulls back
 const SHIRT_IN = [0.08, 0.42] // the mockup fades in around the print
 const PRINT_OUT = [0.3, 0.55] // the print file hands over to the mockup's
 
+// The lights going down and back up: slow, easing in and out
+const LIGHTS_TIME = '1500ms'
+const LIGHTS_EASE = 'cubic-bezier(0.45, 0, 0.55, 1)'
+
 const clamp01 = (v) => Math.min(1, Math.max(0, v))
 const range = (p, [a, b]) => clamp01((p - a) / (b - a))
 const ease = (t) => t * t * (3 - 2 * t)
@@ -89,6 +93,7 @@ export default function ShirtZoom({ print, mockups, alt, light, dark, children }
     let big = 0 // the zoom layer's height: its size at the start
     let end = 1 // its scale at the end, when the photo fills the screen
     let raf = 0
+    let lightsRaf = 0
     let isDark = false
 
     // The zoom layer is laid out at its largest and only ever scaled down,
@@ -122,13 +127,24 @@ export default function ShirtZoom({ print, mockups, alt, light, dark, children }
       const run = r.height - H
       const p = run > 0 ? clamp01(-r.top / run) : 0
 
-      // Lights down while the scene fills the middle of the screen
+      // Lights down while the scene fills the middle of the screen: a slow,
+      // even fade, like theatre lights
       const dim = r.top < H * 0.5 && r.bottom > H * 0.6
       if (dim !== isDark) {
         isDark = dim
         const c = dim ? dark : light
+        root.setProperty('--color-time', LIGHTS_TIME)
+        root.setProperty('--color-ease', LIGHTS_EASE)
         root.setProperty('--bg', c.bg)
         root.setProperty('--ink', c.ink)
+        // The fade has started with these; other color changes go back to normal
+        cancelAnimationFrame(lightsRaf)
+        lightsRaf = requestAnimationFrame(() => {
+          lightsRaf = requestAnimationFrame(() => {
+            root.removeProperty('--color-time')
+            root.removeProperty('--color-ease')
+          })
+        })
       }
 
       // The point held in the middle of the screen drifts from the print's
@@ -158,6 +174,9 @@ export default function ShirtZoom({ print, mockups, alt, light, dark, children }
 
     return () => {
       cancelAnimationFrame(raf)
+      cancelAnimationFrame(lightsRaf)
+      root.removeProperty('--color-time')
+      root.removeProperty('--color-ease')
       window.removeEventListener('scroll', request)
       window.removeEventListener('resize', resize)
       if (isDark) {

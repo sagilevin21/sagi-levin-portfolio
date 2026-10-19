@@ -3,7 +3,7 @@ import * as THREE from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 import { MeshoptDecoder } from 'three/examples/jsm/libs/meshopt_decoder.module.js'
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js'
-import { whenIdle } from '../../intro'
+import { whenFilmDone, whenIdle } from '../../intro'
 
 // ---- Materials (part names come from the SolidWorks bodies) -----------------
 const glossy = (color) =>
@@ -36,6 +36,7 @@ export default function RobotModel({ ref, url, className, onReady }) {
     let cancelled = false
 
     const setup = async () => {
+      await whenFilmDone() // let the page's entrance play smoothly first
       await whenIdle()
       if (cancelled) return
       try {

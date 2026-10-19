@@ -5,6 +5,7 @@ import { mixColors, useProjectScroll } from '../../components/project/useProject
 import WaterLight from '../../components/project/WaterLight'
 import Aquarium from '../../components/project/Aquarium'
 import NextProject from '../../components/project/NextProject'
+import FilmIn from '../../components/FilmIn'
 import { useOpticalAlign } from '../../opticalAlign'
 import './project.css'
 import './Gillbot.css'
@@ -46,12 +47,19 @@ export default function Gillbot() {
 
   return (
     <main className="project gillbot" ref={pageRef}>
+      {/* Trying out: the page arrives through the home page's film grain */}
+      <FilmIn />
       <WaterLight strengthRef={surfaceRef} />
 
       {/* ---- Opening ---- */}
       <section className="p-hero">
         <div className="p-hero-media">
-          <img src={img('underwater-two-fish')} alt="The Gillbot robot swimming underwater beside two fish" />
+          <img
+            src={img('underwater-two-fish')}
+            alt="The Gillbot robot swimming underwater beside two fish"
+            decoding="async"
+            fetchPriority="high"
+          />
         </div>
         <div className="p-hero-text">
           <h1 className="p-title p-enter" ref={titleRef}>

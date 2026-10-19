@@ -30,6 +30,23 @@ export function whenIntroDone() {
   )
 }
 
+// A project page's film entrance (FilmIn) marks the page while it plays.
+// Resolves once it has finished (right away if none is playing), so heavy
+// setup (3D models) waits and the entrance stays smooth.
+const FILM_DONE_EVENT = 'film:done'
+export function filmStarted() {
+  document.documentElement.dataset.film = ''
+}
+export function filmDone() {
+  if (!('film' in document.documentElement.dataset)) return
+  delete document.documentElement.dataset.film
+  window.dispatchEvent(new Event(FILM_DONE_EVENT))
+}
+export function whenFilmDone() {
+  if (!('film' in document.documentElement.dataset)) return Promise.resolve()
+  return new Promise((resolve) => window.addEventListener(FILM_DONE_EVENT, () => resolve(), { once: true }))
+}
+
 // Waits for a quiet moment on the page
 export function whenIdle() {
   return new Promise((resolve) =>

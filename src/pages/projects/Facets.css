@@ -9,6 +9,17 @@
   padding: calc(var(--gutter) * 4) var(--gutter) 0;
 }
 
+/* The kit's own line, as printed inside the box lid */
+.f-quote {
+  font-family: var(--serif);
+  font-style: italic;
+}
+
+/* The concept is longer than most statements: a little wider */
+.p-statement .f-concept {
+  max-width: 30ch;
+}
+
 /* ---------- The block board ---------- */
 
 .f-board {
@@ -122,6 +133,10 @@
 /* ---------- The kit: one photo, edge to edge, a full screen tall ---------- */
 
 .f-kit {
+  position: relative;
+}
+
+.f-kit-photo {
   margin: 0;
   height: 100svh;
   min-height: 480px;
@@ -129,13 +144,38 @@
 }
 
 /* A little taller than its frame, so the slow drift never shows an edge */
-.f-kit img {
+.f-kit-photo img {
   display: block;
   width: 100%;
   height: 112%;
   margin-top: -6svh;
   object-fit: cover;
   object-position: 50% 62%;
+}
+
+/* How the activity works, set in the photo's empty white corner (top right,
+   above the composition) */
+.f-kit-text {
+  position: absolute;
+  top: clamp(96px, 15svh, 170px);
+  left: 61vw;
+  right: var(--gutter);
+  max-width: 28em;
+  margin: 0;
+  font-size: clamp(16px, 1.3vw, 20px);
+  line-height: 1.5;
+  color: #2a161c;
+}
+
+/* Where the photo has no white corner to spare (narrow or tall screens),
+   the text sits below it */
+@media (max-width: 760px), (max-aspect-ratio: 4/3) {
+  .f-kit-text {
+    position: static;
+    max-width: 34em;
+    padding: 7vh var(--gutter) 0;
+    color: var(--ink);
+  }
 }
 
 /* ---------- The shirt: a pinned scene, scrolled through ---------- */
@@ -189,6 +229,7 @@
   position: absolute;
   inset: 0;
   background: radial-gradient(70% 65% at 0% 100%, color-mix(in srgb, var(--bg) 78%, transparent), transparent 75%);
+  transition: --bg var(--color-time) var(--color-ease);
   pointer-events: none;
 }
 
@@ -213,13 +254,13 @@
 @media (max-width: 760px) {
   /* A full portrait screen would cut off the tray or the composition, so
      phones show the whole photo, edge to edge */
-  .f-kit {
+  .f-kit-photo {
     height: auto;
     min-height: 0;
     aspect-ratio: 4 / 3;
   }
 
-  .f-kit img {
+  .f-kit-photo img {
     margin-top: -6%;
   }
 

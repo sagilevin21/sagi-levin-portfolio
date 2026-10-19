@@ -7,6 +7,7 @@ import ComingSoon from './ComingSoon'
 const pages = {
   gillbot: lazy(() => import('./projects/Gillbot')),
   facets: lazy(() => import('./projects/Facets')),
+  'shattered-form': lazy(() => import('./projects/ShatteredForm')),
 }
 
 export default function ProjectPage() {

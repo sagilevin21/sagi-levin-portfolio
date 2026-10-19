@@ -8,6 +8,9 @@ const SELECTOR = 'p, li, dd, figcaption, h1, h2, h3, .label-text'
 const NBSP = ' '
 
 function fix(el) {
+  // Two words or fewer: nothing to protect, and joining them would stop a
+  // short title (like "Shattered Form") from wrapping on a phone
+  if (el.textContent.trim().split(/\s+/).length < 3) return
   // The last text node that has visible text
   const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT)
   let last = null
