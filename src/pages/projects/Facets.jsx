@@ -51,8 +51,7 @@ export default function Facets() {
           {project.title}
         </h1>
         <p className="p-lede p-enter">
-          <em className="f-quote">&ldquo;things to think with&rdquo;</em> a tactile and expressive experience for
-          men&rsquo;s circles
+          &ldquo;things to think with&rdquo; a tactile and expressive experience for men&rsquo;s circles
         </p>
         <dl className="p-meta p-enter">
           <div>
@@ -88,8 +87,8 @@ export default function Facets() {
         <BlockBoard />
       </section>
 
-      {/* ---- The kit: the open tray, a finished composition beside it, and
-          how the activity works, set in the photo's white space ---- */}
+      {/* ---- The kit: the open tray and a finished composition, tinted in
+          the page's dark color, with how the activity works over it ---- */}
       <section className="f-kit">
         <figure className="f-kit-photo">
           <img
@@ -100,12 +99,19 @@ export default function Facets() {
             decoding="async"
           />
         </figure>
-        <p className="f-kit-text" data-reveal>
-          Different colors, shapes, textures, and weights invite participants to express their feelings by arranging
-          physical objects within a 2D format. Each composition is documented and eventually transformed into a
-          graphic souvenir. This visual language becomes a code in everyday life, expanding a network of trust and
-          signaling safety to others.
-        </p>
+        <ul className="f-kit-text">
+          <li data-reveal>
+            Different colors, shapes, textures, and weights invite participants to express their feelings by
+            arranging physical objects within a 2D format.
+          </li>
+          <li data-reveal style={{ transitionDelay: '120ms' }}>
+            Each composition is documented and eventually transformed into a graphic souvenir.
+          </li>
+          <li data-reveal style={{ transitionDelay: '240ms' }}>
+            This visual language becomes a code in everyday life, expanding a network of trust and signaling safety
+            to others.
+          </li>
+        </ul>
       </section>
 
       {/* ---- The shirt: the print alone, then the view pulls back to the shirt ---- */}
