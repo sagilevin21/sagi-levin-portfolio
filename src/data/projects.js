@@ -100,6 +100,8 @@ export const projects = [
     field: 'Oil painting',
     summary: 'Oil paintings made alongside the design work.',
     year: null,
+    team: ['Sagi Levin'],
+    discipline: 'Oil painting',
     cover: '/images/paintings/sl_003.webp',
     colors: { bg: '#e8dccb', ink: '#2b2420', accent: '#3d6ea8' },
     featured: false,

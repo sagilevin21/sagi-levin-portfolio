@@ -13,6 +13,7 @@ const pages = {
   'shattered-form': lazy(() => import('./projects/ShatteredForm')),
   'feather-weight': lazy(() => import('./projects/FeatherWeight')),
   ritual: lazy(() => import('./projects/Ritual')),
+  paintings: lazy(() => import('./projects/Paintings')),
 }
 
 export default function ProjectPage() {

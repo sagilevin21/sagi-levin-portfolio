@@ -1,0 +1,61 @@
+/* ---------- The paintings: whole, in calm rows ---------- */
+
+.pt-gallery {
+  display: grid;
+  gap: clamp(56px, 12vh, 140px);
+  padding: clamp(72px, 12vh, 140px) var(--gutter) 14vh;
+}
+
+/* A pair side by side, the same height; each takes width by its shape */
+.pt-row {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  gap: clamp(24px, 6vw, 110px);
+  height: min(78svh, 46vw);
+}
+
+/* The landscape painting on its own, a little narrower than the row */
+.pt-row.is-single {
+  height: min(70svh, 42vw);
+}
+
+.pt-piece {
+  height: 100%;
+  margin: 0;
+}
+
+.pt-piece img {
+  display: block;
+  height: 100%;
+  width: auto;
+  max-width: 100%;
+  object-fit: contain;
+  /* A soft shadow, as if hung on the wall */
+  box-shadow: 0 24px 50px -28px rgba(43, 36, 32, 0.45);
+}
+
+/* ---------- Phones: one after another ---------- */
+
+@media (max-width: 760px) {
+  .pt-gallery {
+    gap: 7vh;
+  }
+
+  .pt-row,
+  .pt-row.is-single {
+    flex-direction: column;
+    align-items: center;
+    gap: 7vh;
+    height: auto;
+  }
+
+  .pt-piece {
+    height: auto;
+  }
+
+  .pt-piece img {
+    width: 100%;
+    height: auto;
+  }
+}
