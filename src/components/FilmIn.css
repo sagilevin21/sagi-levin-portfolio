@@ -1,0 +1,93 @@
+/* Layers over the screen while the page arrives: the page color lifting
+   (under the menu, which stays put), then a warm tint, the grain and darker
+   corners over everything. Only opacity and position animate,
+   so the browser keeps them smooth while the page is busy loading. */
+.film-in {
+  --film-fade: 380ms; /* the page rising out of its color */
+  --film-time: 800ms; /* the film look fading away */
+  /* Eases out: quick at first, then a long, gentle settle */
+  --film-ease: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.film-in > * {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.film-in-veil {
+  z-index: 19;
+  background: var(--bg);
+  animation: film-out var(--film-fade) cubic-bezier(0.22, 1, 0.36, 1) 60ms both;
+}
+
+.film-in-tint {
+  z-index: 40;
+  --o: 0.3;
+  background: #ffb26e;
+  mix-blend-mode: soft-light;
+  animation: film-out var(--film-time) var(--film-ease) both;
+}
+
+/* How strong the grain is: --o, its starting opacity */
+.film-in-grain {
+  z-index: 41;
+  --o: 0.6;
+  overflow: hidden;
+  mix-blend-mode: overlay;
+  animation: film-out var(--film-time) var(--film-ease) both;
+}
+
+/* A grain tile twice the screen's size, jumping to a new spot 24 times a
+   second, like a fresh film frame */
+.film-in-grain > div {
+  position: absolute;
+  inset: -50%;
+  will-change: transform;
+  animation: film-jitter 333ms steps(1) infinite;
+}
+
+.film-in-vignette {
+  z-index: 42;
+  --o: 1;
+  background: radial-gradient(ellipse at center, transparent 45%, rgba(0, 0, 0, 0.42) 100%);
+  animation: film-out var(--film-time) var(--film-ease) both;
+}
+
+@keyframes film-out {
+  from {
+    opacity: var(--o, 1);
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes film-jitter {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  12.5% {
+    transform: translate3d(-7%, 4%, 0);
+  }
+  25% {
+    transform: translate3d(5%, -9%, 0);
+  }
+  37.5% {
+    transform: translate3d(-12%, -3%, 0);
+  }
+  50% {
+    transform: translate3d(9%, 7%, 0);
+  }
+  62.5% {
+    transform: translate3d(-4%, 11%, 0);
+  }
+  75% {
+    transform: translate3d(13%, -6%, 0);
+  }
+  87.5% {
+    transform: translate3d(-9%, -11%, 0);
+  }
+}

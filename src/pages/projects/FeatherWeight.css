@@ -1,0 +1,197 @@
+/* ---------- Opening: the heart hanging from the top of the page ---------- */
+
+.fw-hero {
+  /* --h: how far the heart's video reaches down; --x: where the heart hangs */
+  --h: min(100svh, 1150px);
+  --x: 62%;
+  position: relative;
+  min-height: 100svh;
+  display: grid;
+  align-items: end;
+  padding: 0 var(--gutter) clamp(48px, 9svh, 110px);
+  /* Clipped at the sides only: the feathers hang on down into the concept */
+  overflow-x: clip;
+  overflow-y: visible;
+}
+
+/* Hangs from the very top edge (its chain runs off the page), and sways a
+   little around that point, like something on a chain */
+.fw-hang {
+  position: absolute;
+  top: 0;
+  left: var(--x);
+  height: var(--h);
+  aspect-ratio: 450 / 926;
+  transform-origin: 50% 0;
+  translate: -50% 0;
+  animation: fw-sway 7s ease-in-out infinite alternate;
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* The feathers hang from the top edge too, to the right of the heart, on
+   down past the opening into the concept. Their chain is the photo's own,
+   extended upward, at the same link size as the heart's. Placed by where
+   the chain runs (59.1% across the image), with their own, slower sway */
+.fw-feathers {
+  position: absolute;
+  top: 0;
+  left: calc(var(--x) + var(--h) * 0.34);
+  height: calc(var(--h) * 1.35);
+  width: auto;
+  max-width: none;
+  translate: -59.1% 0;
+  transform-origin: 59.1% 0;
+  animation: fw-sway 9s ease-in-out -3s infinite alternate-reverse;
+  z-index: 1;
+  pointer-events: none;
+}
+
+@keyframes fw-sway {
+  from {
+    rotate: -1.3deg;
+  }
+  to {
+    rotate: 1.3deg;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fw-hang,
+  .fw-feathers {
+    animation: none;
+  }
+}
+
+.cutout,
+.cutout canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* The video itself only feeds the picture */
+.cutout video {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* The heart hangs behind the title */
+.fw-hero-text {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  gap: clamp(16px, 2vw, 28px);
+}
+
+/* The line below the title stays clear of the heart */
+.fw-hero-text .p-lede {
+  max-width: calc(var(--x) - var(--gutter) - var(--h) * 0.26);
+}
+
+/* ---------- Concept ---------- */
+
+/* In front of the feathers hanging down into it */
+.feather .p-statement {
+  position: relative;
+  z-index: 2;
+}
+
+/* Narrow enough to stay clear of the feathers hanging on the right */
+.p-statement .fw-concept {
+  max-width: 23ch;
+}
+
+.fw-concept-body {
+  margin: 28px auto 0;
+  max-width: 36ch;
+}
+
+/* ---------- Worn: one large portrait, centred ---------- */
+
+.fw-editorial {
+  margin: 0;
+  padding: 6vh var(--gutter) 14vh;
+}
+
+.fw-editorial img {
+  display: block;
+  /* As large as fits a screen's height */
+  width: min(100%, 48vw, 88svh * 0.838);
+  margin: 0 auto;
+  border-radius: 4px;
+}
+
+/* ---------- The two parts: side by side, the same height, centred ---------- */
+
+.fw-details {
+  display: flex;
+  gap: var(--gutter);
+  align-items: flex-start;
+  width: min(100% - var(--gutter) * 2, 74vw, 1180px);
+  margin: 0 auto;
+  padding: 0 0 6vh;
+}
+
+.fw-detail {
+  margin: 0;
+}
+
+/* Each takes width in proportion to its shape, so both end up the same height */
+.fw-detail.is-heart {
+  flex: 0.803 1 0;
+}
+
+.fw-detail.is-feathers {
+  flex: 0.75 1 0;
+}
+
+.fw-detail img {
+  display: block;
+  width: 100%;
+  border-radius: 4px;
+}
+
+.fw-detail figcaption {
+  margin-top: 12px;
+  font-size: 13px;
+}
+
+/* ---------- Phones ---------- */
+
+@media (max-width: 760px) {
+  /* Smaller, and the heart further left, so both fit side by side */
+  .fw-hero {
+    --h: 58svh;
+    --x: 32%;
+    padding-top: 60svh;
+  }
+
+  .fw-hero-text .p-lede {
+    max-width: none;
+  }
+
+  .fw-editorial {
+    padding: 2vh var(--gutter) 8vh;
+  }
+
+  .fw-editorial img {
+    width: 100%;
+  }
+
+  .fw-details {
+    flex-direction: column;
+    gap: 6vh;
+    width: auto;
+    margin: 0 var(--gutter);
+  }
+
+  .fw-detail.is-heart,
+  .fw-detail.is-feathers {
+    flex: none;
+    width: 100%;
+  }
+}

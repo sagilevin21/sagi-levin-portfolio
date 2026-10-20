@@ -1,0 +1,181 @@
+/* "Get to know me" and Contact, below the project list on the Home page */
+
+.me {
+  position: relative;
+  z-index: 2;
+  /* Its own page color, so the portrait has something to blend into */
+  background: var(--bg);
+  transition: background-color var(--color-time) var(--color-ease);
+}
+
+/* Each part rises in gently as it comes into view (useProjectScroll) */
+.me [data-reveal] {
+  opacity: 0;
+  transform: translateY(26px);
+  transition:
+    opacity 900ms var(--ease),
+    transform 1100ms var(--ease);
+}
+
+.me [data-reveal].is-in {
+  opacity: 1;
+  transform: none;
+}
+
+/* Small headings as on the rest of the Home page */
+.me .label-kicker {
+  margin: 0;
+}
+
+/* ---------- Get to know me ---------- */
+
+.me-about {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  column-gap: var(--gutter);
+  align-items: start;
+  padding: 18vh var(--gutter) 8vh;
+}
+
+.me-kicker {
+  grid-column: 1 / -1;
+  margin-bottom: 18px !important;
+}
+
+/* The same size as the project names in the Home page list */
+.me-title {
+  grid-column: 1 / 7;
+  grid-row: 2;
+  margin: 0;
+  font-size: clamp(44px, min(7.4vw, 10.5vh), 132px);
+  font-weight: 500;
+  line-height: 0.98;
+  letter-spacing: -0.045em;
+}
+
+/* The portrait on the right, from the top of the title down to the end of
+   the text, so it always matches the text's height; its white backdrop
+   multiplies into the page color, like a print on paper */
+.me-photo {
+  grid-column: 7 / 13;
+  grid-row: 2 / span 2;
+  align-self: stretch;
+  position: relative;
+  margin: 0;
+  mix-blend-mode: multiply;
+}
+
+.me-photo img {
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 100%;
+  width: auto;
+  max-width: 100%;
+  object-fit: cover;
+  object-position: 50% 20%;
+}
+
+/* The paragraphs at one size, one above the other */
+.me-text {
+  grid-column: 1 / 7;
+  grid-row: 3;
+  display: grid;
+  gap: clamp(24px, 4vh, 44px);
+  margin-top: clamp(32px, 6vh, 64px);
+}
+
+.me-text p {
+  margin: 0;
+  max-width: 34ch;
+  font-size: clamp(18px, 1.55vw, 24px);
+  line-height: 1.45;
+  letter-spacing: -0.01em;
+}
+
+/* ---------- Contact ---------- */
+
+.me-contact {
+  display: grid;
+  gap: 12px;
+  padding: 8vh var(--gutter) var(--gutter);
+}
+
+.me-say {
+  margin: 8px 0 0;
+  font-size: clamp(20px, 2vw, 30px);
+  letter-spacing: -0.015em;
+}
+
+/* The address, written out */
+.me-email {
+  justify-self: start;
+  font-size: clamp(26px, 3.8vw, 60px);
+  font-weight: 500;
+  line-height: 1.05;
+  letter-spacing: -0.04em;
+}
+
+.me-contact-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 10px clamp(20px, 3vw, 40px);
+  margin-top: 14px;
+  font-size: 15px;
+}
+
+.me-contact-row a:hover,
+.me-copy:hover {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+/* A plain text button, like the links beside it */
+.me-copy {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+
+.me-based {
+  opacity: 0.6;
+}
+
+.me-foot {
+  margin: 14vh 0 0;
+  font-size: 12px;
+  opacity: 0.55;
+}
+
+/* ---------- Phones ---------- */
+
+@media (max-width: 760px) {
+  .me-about {
+    display: block;
+    padding: 14vh var(--gutter) 6vh;
+  }
+
+  .me-photo {
+    width: 72%;
+    margin: 32px 0 0 auto;
+  }
+
+  .me-photo img {
+    position: static;
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  .me-title {
+    font-size: clamp(40px, 12vw, 64px);
+  }
+
+  .me-contact {
+    padding-top: 6vh;
+  }
+}

@@ -1,16 +1,28 @@
-# React + Vite
+# Sagi Levin, design portfolio
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+Personal portfolio site, built with React and Vite and published on Netlify.
 
-Currently, two official plugins are available:
+## Working on it
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+```bash
+npm install
+npm run dev
+```
 
-## React Compiler
+Then open the address it prints (usually http://localhost:5173).
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Content
 
-## Expanding the Oxlint configuration
+- **Projects:** `src/data/projects.js` (titles, colors, which ones show on the Home page)
+- **About, contact, links:** `src/data/site.js`
+- **Project pages:** `src/pages/projects/`
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+## Images
+
+1. Put full-size photos in `originals/<project>/` (not uploaded; kept on this computer only).
+2. `npm run images` makes the web copies in `public/images/<project>/`.
+3. After adding a project or changing a cover: `npm run thumbs` (small pictures for the All work page).
+
+## Publishing
+
+Every push to the `main` branch on GitHub is built and published by Netlify automatically.

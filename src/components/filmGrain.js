@@ -1,5 +1,5 @@
-// The film-grain look, shared by the home page images (GlassBackdrop) and
-// images that arrive through it on project pages (GrainImage).
+// The film-grain look of the home page images (GlassBackdrop). Project
+// pages arrive with a lighter, CSS-only version of it (FilmIn).
 
 export const VERT = `
 attribute vec2 p;
@@ -84,31 +84,6 @@ void main() {
   vec2 d = uv - 0.5;
   col *= 1.0 - dot(d, d) * vignette * k;
   gl_FragColor = vec4(col, 1.0);
-}`
-
-// The same grain, flicker and darker corners as a layer on its own, to lay
-// over a whole page with CSS "overlay" blending (FilmIn): mid-grey leaves
-// the page as it is, lighter and darker greys lighten and darken it
-export const FILM_FRAG = `
-#ifdef GL_FRAGMENT_PRECISION_HIGH
-precision highp float;
-#else
-precision mediump float;
-#endif
-varying vec2 uv;
-uniform float k, time, grainSize, grain, retro, flicker, vignette;
-${NOISE}
-void main() {
-  float frame = floor(time * 24.0);
-  vec2 px = gl_FragCoord.xy / grainSize;
-  float n = grainNoise(px, frame) * 0.6 + grainNoise(px * 0.42 + 31.7, frame + 17.0) * 0.4;
-  n = (n - 0.5) * 2.0 * grain * k;
-  float f = 1.0 + (hash(vec3(frame, 5.0, 9.0)) - 0.5) * flicker * k;
-  vec2 d = uv - 0.5;
-  float v = 1.0 - dot(d, d) * vignette * 1.6 * k;
-  // A warm tint, like the retro grade: a touch more red, less blue
-  vec3 warm = mix(vec3(1.0), vec3(1.07, 1.0, 0.84), retro * k);
-  gl_FragColor = vec4(clamp(vec3(0.5 * v * f) * warm + n, 0.0, 1.0), 1.0);
 }`
 
 // How the grain looks

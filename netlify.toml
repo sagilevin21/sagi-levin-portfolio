@@ -2,6 +2,10 @@
   command = "npm run build"
   publish = "dist"
 
+[build.environment]
+  # The same Node version the site is built with locally
+  NODE_VERSION = "24"
+
 # Send every URL to index.html so page links (e.g. /projects/foo) work on refresh
 [[redirects]]
   from = "/*"

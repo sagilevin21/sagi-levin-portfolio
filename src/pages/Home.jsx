@@ -4,6 +4,7 @@ import { featuredProjects, projects } from '../data/projects'
 import { idleColors, site } from '../data/site'
 import { useTheme } from '../theme'
 import GlassBackdrop from '../components/GlassBackdrop'
+import AboutContact from './home/AboutContact'
 import './Home.css'
 
 const covers = featuredProjects.map((p) => p.cover)
@@ -41,86 +42,91 @@ export default function Home() {
   }, [])
 
   return (
-    <main className={`home ${active ? 'has-active' : ''}`}>
-      <div
-        className={`home-backdrop ${active ? 'is-on' : ''} ${FULLSCREEN_IMAGE ? 'is-full' : ''}`}
-      >
-        <GlassBackdrop images={covers} active={active?.cover} shifts={coverShifts} />
-      </div>
-
-      <h1 className="visually-hidden">
-        {site.name}, {site.role}
-      </h1>
-
-      {/* Phones: intro sits above the list instead of in the corner label */}
-      <section className="home-intro" aria-hidden="true">
-        <p className="label-kicker">
-          {site.introTitle}
-        </p>
-        <IntroText />
-      </section>
-
-      <ol
-        className="index"
-        ref={listRef}
-        onMouseLeave={() => setActiveSlug(null)}
-        aria-label="Selected projects"
-      >
-        {featuredProjects.map((p, i) => (
-          <li
-            key={p.slug}
-            className={p.slug === activeSlug ? 'is-active' : ''}
-            style={{ '--i': i }}
-          >
-            <Link
-              to={`/projects/${p.slug}`}
-              data-slug={p.slug}
-              onMouseEnter={() => setActiveSlug(p.slug)}
-              onFocus={() => setActiveSlug(p.slug)}
-            >
-              <span className="index-name">{p.title}</span>
-              <span className="index-meta">
-                <span className="index-num">{pad(i + 1)}</span>
-                <span className="index-field">{p.field}</span>
-              </span>
-            </Link>
-          </li>
-        ))}
-      </ol>
-
-      {/* Museum-style label: introduces Sagi, or describes the active project */}
-      <aside className="label" aria-live="polite">
-        {active ? (
-          <div className="label-inner" key={active.slug}>
-            <p className="label-title">{active.title}</p>
-            <p className="label-field">{active.field}</p>
-            <p className="label-text">{active.summary}</p>
-          </div>
-        ) : (
-          <div className="label-inner" key="intro">
-            <p className="label-kicker">
-              {site.introTitle}
-            </p>
-            <IntroText />
-          </div>
-        )}
-      </aside>
-
-      <footer className="home-foot">
-        <Link to="/work" className="home-all">
-          All work <sup>{pad(projects.length)}</sup>
-        </Link>
-        <div className="home-links">
-          <a href={`mailto:${site.email}`}>Email</a>
-          <a href={site.instagram} target="_blank" rel="noreferrer">
-            Instagram
-          </a>
-          <a href={site.linkedin} target="_blank" rel="noreferrer">
-            LinkedIn
-          </a>
+    <>
+      <main className={`home ${active ? 'has-active' : ''}`}>
+        <div
+          className={`home-backdrop ${active ? 'is-on' : ''} ${FULLSCREEN_IMAGE ? 'is-full' : ''}`}
+        >
+          <GlassBackdrop images={covers} active={active?.cover} shifts={coverShifts} />
         </div>
-      </footer>
-    </main>
+
+        <h1 className="visually-hidden">
+          {site.name}, {site.role}
+        </h1>
+
+        {/* Phones: intro sits above the list instead of in the corner label */}
+        <section className="home-intro" aria-hidden="true">
+          <p className="label-kicker">
+            {site.introTitle}
+          </p>
+          <IntroText />
+        </section>
+
+        <ol
+          className="index"
+          ref={listRef}
+          onMouseLeave={() => setActiveSlug(null)}
+          aria-label="Selected projects"
+        >
+          {featuredProjects.map((p, i) => (
+            <li
+              key={p.slug}
+              className={p.slug === activeSlug ? 'is-active' : ''}
+              style={{ '--i': i }}
+            >
+              <Link
+                to={`/projects/${p.slug}`}
+                data-slug={p.slug}
+                onMouseEnter={() => setActiveSlug(p.slug)}
+                onFocus={() => setActiveSlug(p.slug)}
+              >
+                <span className="index-name">{p.title}</span>
+                <span className="index-meta">
+                  <span className="index-num">{pad(i + 1)}</span>
+                  <span className="index-field">{p.field}</span>
+                </span>
+              </Link>
+            </li>
+          ))}
+        </ol>
+
+        {/* Museum-style label: introduces Sagi, or describes the active project */}
+        <aside className="label" aria-live="polite">
+          {active ? (
+            <div className="label-inner" key={active.slug}>
+              <p className="label-title">{active.title}</p>
+              <p className="label-field">{active.field}</p>
+              <p className="label-text">{active.summary}</p>
+            </div>
+          ) : (
+            <div className="label-inner" key="intro">
+              <p className="label-kicker">
+                {site.introTitle}
+              </p>
+              <IntroText />
+            </div>
+          )}
+        </aside>
+
+        <footer className="home-foot">
+          <Link to="/work" className="home-all">
+            All work <sup>{pad(projects.length)}</sup>
+          </Link>
+          <div className="home-links">
+            <Link to="/#contact">Email</Link>
+            <a href={site.instagram} target="_blank" rel="noreferrer">
+              Instagram
+            </a>
+            <a href={site.linkedin} target="_blank" rel="noreferrer">
+              LinkedIn
+            </a>
+          </div>
+        </footer>
+      </main>
+
+      {/* Scroll on: "Get to know me" and Contact */}
+      <AboutContact />
+    </>
   )
 }
 

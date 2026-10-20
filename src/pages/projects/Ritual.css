@@ -1,0 +1,130 @@
+/* ---------- Concept ---------- */
+
+.p-statement .r-concept {
+  max-width: 18ch;
+}
+
+.r-concept-body {
+  margin: 28px auto 0;
+  max-width: 40ch;
+}
+
+/* The kit: a short numbered list, centred under the text */
+.r-tools {
+  display: grid;
+  gap: 10px;
+  width: fit-content;
+  max-width: 100%;
+  list-style: none;
+  margin: clamp(48px, 8vh, 80px) auto 0;
+  padding: 0;
+  text-align: left;
+}
+
+.r-tools li {
+  display: grid;
+  grid-template-columns: 2.2em auto 1fr;
+  align-items: baseline;
+  column-gap: 14px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid color-mix(in srgb, var(--ink) 18%, transparent);
+}
+
+/* Numbers in the serif, as in the Home page list */
+.r-tool-num {
+  font-family: var(--serif);
+  font-size: 14px;
+  font-variant-numeric: lining-nums;
+  color: var(--accent);
+}
+
+.r-tool-name {
+  font-size: clamp(18px, 1.5vw, 22px);
+  letter-spacing: -0.01em;
+}
+
+.r-tool-note {
+  font-family: var(--serif);
+  font-size: 15px;
+  opacity: 0.7;
+}
+
+@media (max-width: 760px) {
+  .r-tools li {
+    grid-template-columns: 2em 1fr;
+  }
+
+  .r-tool-note {
+    grid-column: 2;
+  }
+}
+
+/* ---------- The ritual, one step at a time (ScrollSequence) ---------- */
+
+/* The screen takes the current photo's edge color (set by ScrollSequence) */
+.seq-stage {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  overflow: hidden;
+  transition: background-color 700ms var(--ease);
+}
+
+/* Each picture shows whole (its printed labels are never cut off), its
+   edges fading into the color around it, and cross-fades into the next */
+.seq-stage img {
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  /* As large as fits the screen (the photos are all 4:3) */
+  width: min(100%, 100svh * 4 / 3);
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  opacity: 0;
+  transform: scale(1.02);
+  transition:
+    opacity 700ms var(--ease),
+    transform 1200ms var(--ease);
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 9%, #000 91%, transparent),
+    linear-gradient(to bottom, transparent, #000 7%, #000 93%, transparent);
+  -webkit-mask-composite: source-in;
+  mask-image: linear-gradient(to right, transparent, #000 9%, #000 91%, transparent),
+    linear-gradient(to bottom, transparent, #000 7%, #000 93%, transparent);
+  mask-composite: intersect;
+}
+
+.seq-stage img.is-on {
+  opacity: 1;
+  transform: none;
+}
+
+/* Progress: a row of bars, bottom left, filling up step by step */
+.seq-ticks {
+  position: absolute;
+  left: var(--gutter);
+  bottom: calc(var(--gutter) + 6px);
+  z-index: 1;
+  display: flex;
+  gap: 6px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.seq-ticks li {
+  width: 26px;
+  height: 3px;
+  border-radius: 3px;
+  background: rgba(0, 0, 0, 0.16);
+  transition: background-color 400ms var(--ease);
+}
+
+.seq-ticks li.is-on {
+  background: var(--accent);
+}
+
+@media (max-width: 760px) {
+  .seq-ticks li {
+    width: 18px;
+  }
+}

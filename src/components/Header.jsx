@@ -5,20 +5,31 @@ import { projects } from '../data/projects'
 import Logo from './Logo'
 
 // Home already has email / Instagram / LinkedIn at the bottom, so its menu is
-// a single "Get to know me" link. Every other page gets "Main" (back home),
-// "All work" and a Contact menu that opens on hover (or tap / keyboard).
+// a single "Get to know me" link, down to that part of the Home page. Every
+// other page gets "Main" (back home), "All work" and a Contact menu that
+// opens on hover (or tap / keyboard); its Email leads to Home's Contact.
 export default function Header() {
   const { pathname } = useLocation()
   const isHome = pathname === '/'
+  // On Home the menu sits on the page with no backdrop, until the page
+  // scrolls on into "Get to know me"
+  const [scrolled, setScrolled] = useState(false)
+  useEffect(() => {
+    if (!isHome) return
+    const onScroll = () => setScrolled(window.scrollY > window.innerHeight * 0.6)
+    onScroll()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [isHome])
 
   return (
-    <header className={`site-header ${isHome ? '' : 'has-backdrop'}`}>
+    <header className={`site-header ${!isHome || scrolled ? 'has-backdrop' : ''}`}>
       <Link to="/" className="logo" aria-label={`${site.name}, home`}>
         <Logo />
       </Link>
       <nav className="site-nav" aria-label="Main">
         {isHome ? (
-          <NavLink to="/about">Get to know me</NavLink>
+          <Link to="/#about">Get to know me</Link>
         ) : (
           <>
             <Link to="/">Main</Link>
@@ -71,7 +82,7 @@ function ContactMenu() {
       </button>
       <ul id="contact-links" className="contact-links">
         <li>
-          <a href={`mailto:${site.email}`}>Email</a>
+          <Link to="/#contact">Email</Link>
         </li>
         <li>
           <a href={site.instagram} target="_blank" rel="noreferrer">

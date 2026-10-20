@@ -96,29 +96,6 @@
   object-fit: cover;
 }
 
-/* ---------- Film entrance (FilmIn) ---------- */
-
-/* Layers over the screen while the page arrives: the page color lifting
-   (under the menu, which stays put), and the grain over everything */
-.film-in > * {
-  position: fixed;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-}
-
-.film-in-veil {
-  z-index: 19;
-  background: var(--bg);
-}
-
-.film-in-grain {
-  z-index: 41;
-  mix-blend-mode: overlay;
-  opacity: 0.6;
-}
-
 /* Fades the photo into the page color, so the text below it reads */
 .p-hero-media::after {
   content: '';

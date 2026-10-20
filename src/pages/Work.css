@@ -1,0 +1,168 @@
+/* All work: pictures scattered across the page */
+
+.work {
+  min-height: 100svh;
+  padding: calc(var(--gutter) * 3.4) var(--gutter) 10vh;
+}
+
+/* Same size as the project names on the Home page */
+.work-title {
+  margin: 0 0 clamp(32px, 6vh, 72px);
+  font-size: clamp(44px, min(7.4vw, 10.5vh), 132px);
+  font-weight: 500;
+  line-height: 0.98;
+  letter-spacing: -0.045em;
+  animation: work-in 900ms var(--ease) both;
+}
+
+.work-title sup {
+  font-family: var(--serif);
+  font-size: 0.2em;
+  font-weight: 400;
+  letter-spacing: 0;
+  font-variant-numeric: lining-nums;
+  vertical-align: 2.4em;
+  margin-left: 0.3em;
+}
+
+/* ---------- The table ---------- */
+
+.work-table {
+  position: relative;
+  height: var(--table-h);
+  margin: 0 calc(var(--gutter) * -1);
+  list-style: none;
+  padding: 0;
+}
+
+.work-item {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  width: var(--w);
+  z-index: 1;
+  /* Rise in one after another when the page opens */
+  animation: work-in 1000ms var(--ease) calc(var(--i) * 80ms + 150ms) both;
+}
+
+@keyframes work-in {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+}
+
+.work-item.is-active {
+  z-index: 5;
+}
+
+.work-item a {
+  display: block;
+  transition:
+    transform 700ms var(--ease),
+    opacity 450ms var(--ease);
+}
+
+/* Grows when pointed at */
+.work-item.is-active a {
+  transform: scale(1.28);
+}
+
+/* While one is active, the others fade back */
+.has-active .work-item:not(.is-active) a {
+  opacity: 0.3;
+}
+
+.work-pic {
+  display: block;
+  overflow: hidden;
+  border-radius: 3px;
+  box-shadow: 0 18px 40px -22px rgba(0, 0, 0, 0.45);
+  transition: box-shadow 700ms var(--ease);
+}
+
+.work-item.is-active .work-pic {
+  box-shadow: 0 30px 60px -24px rgba(0, 0, 0, 0.5);
+}
+
+.work-pic img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* Small title under each picture; its field appears when active */
+.work-cap {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-top: 10px;
+  font-size: 13px;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.work-name {
+  font-weight: 500;
+}
+
+.work-field {
+  font-family: var(--serif);
+  color: var(--field);
+  opacity: 0;
+  transform: translateX(-4px);
+  transition:
+    opacity 400ms var(--ease),
+    transform 500ms var(--ease);
+}
+
+.work-item.is-active .work-field {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .work-item,
+  .work-title {
+    animation: none;
+  }
+}
+
+/* ---------- Phones and touch screens: a loose column ---------- */
+
+@media (max-width: 760px), (hover: none) {
+  .work-table {
+    height: auto;
+    margin: 0;
+    display: grid;
+    gap: 9vh;
+    padding-bottom: 20vh;
+  }
+
+  .work-item {
+    position: static;
+    width: min(78%, 420px);
+  }
+
+  /* Alternating sides, like the rows on the Home page */
+  .work-item:nth-child(even) {
+    margin-left: auto;
+  }
+
+  .work-item.is-active a {
+    transform: scale(1.04);
+  }
+
+  .has-active .work-item:not(.is-active) a {
+    opacity: 0.45;
+  }
+
+  .work-cap {
+    font-size: 15px;
+  }
+
+  .work-field {
+    opacity: 1;
+    transform: none;
+  }
+}

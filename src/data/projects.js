@@ -13,6 +13,8 @@
 //
 // Images: drop full-size photos into originals/<project>/, run `npm run images`,
 // then use the web copy from public/images/<project>/ (same name, .webp).
+// After adding a project or changing a cover, run `npm run thumbs` for the
+// All work page's small pictures.
 
 export const projects = [
   {
@@ -68,6 +70,9 @@ export const projects = [
     summary:
       'Five objects for one small luxury: a Negroni kit for the ritual of making a drink at home alone.',
     year: 2024,
+    team: ['Sagi Levin'],
+    duration: 'One month',
+    discipline: 'Tool kit',
     cover: '/images/ritual/hero.webp',
     colors: { bg: '#060506', ink: '#f6b27a', accent: '#ee5a2c' },
     featured: true,
@@ -80,9 +85,12 @@ export const projects = [
     summary:
       'Carved lapis feathers and an airy brass heart, after the Egyptian myth of the weighing of the heart.',
     year: 2026,
+    team: ['Sagi Levin'],
+    duration: 'One month',
+    discipline: 'Jewelry design',
     cover: '/images/feather-weight/hero.webp',
     coverShift: 0.3,
-    colors: { bg: '#57b9f8', ink: '#1a0f2e', accent: '#c8103f', field: '#1b2f6e' },
+    colors: { bg: '#57b9f8', ink: '#1a0f2e', accent: '#1b2f6e', field: '#1b2f6e' },
     featured: true,
     order: 5,
   },

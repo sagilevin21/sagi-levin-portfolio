@@ -366,12 +366,13 @@ html[data-intro] .home-intro {
     font-size: 16px;
   }
 
-  /* Names fade out as they slide under the bottom links */
+  /* Names fade out as they slide under the bottom links, which stay at the
+     bottom of the screen while the list scrolls, then move on up with it
+     (the page continues with "Get to know me") */
   .home-foot {
-    position: fixed;
-    left: 0;
-    right: 0;
+    position: sticky;
     bottom: 0;
+    margin: 0 calc(var(--gutter) * -1);
     justify-content: space-between;
     padding: 56px var(--gutter) var(--gutter);
     background: linear-gradient(to top, var(--bg) 45%, transparent);
