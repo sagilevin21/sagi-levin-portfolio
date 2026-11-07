@@ -59,7 +59,6 @@ export default function Home() {
           <p className="label-kicker">
             {site.introTitle}
           </p>
-          <IntroText />
         </section>
 
         <ol
@@ -103,7 +102,6 @@ export default function Home() {
               <p className="label-kicker">
                 {site.introTitle}
               </p>
-              <IntroText />
             </div>
           )}
         </aside>
@@ -127,19 +125,5 @@ export default function Home() {
       {/* Scroll on: "Get to know me" and Contact */}
       <AboutContact />
     </>
-  )
-}
-
-// The intro as one paragraph, with a line break between its parts
-function IntroText() {
-  return (
-    <p className="label-text">
-      {site.intro.map((line, i) => (
-        <span key={i}>
-          {i > 0 && <br />}
-          {line}
-        </span>
-      ))}
-    </p>
   )
 }

@@ -76,12 +76,12 @@
   object-position: 50% 20%;
 }
 
-/* The paragraphs at one size, one above the other */
+/* Short paragraphs at one size, one above the other, a line's space apart */
 .me-text {
   grid-column: 1 / 7;
   grid-row: 3;
   display: grid;
-  gap: clamp(24px, 4vh, 44px);
+  gap: clamp(18px, 2.6vh, 28px);
   margin-top: clamp(32px, 6vh, 64px);
 }
 
