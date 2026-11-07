@@ -57,6 +57,88 @@
   user-select: none;
   filter: drop-shadow(0 3px 5px rgba(42, 22, 28, 0.12));
 }
+
+/* "Try it yourself", in the middle of the frame, under the blocks */
+.board-hint {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  translate: -50% -50%;
+  margin: 0;
+  white-space: nowrap;
+  font-size: clamp(18px, 1.8vw, 28px);
+  letter-spacing: -0.01em;
+  color: var(--ink);
+  opacity: 0.55;
+  pointer-events: none;
+  transition: opacity 400ms var(--ease);
+}
+
+.board-hint.is-hidden {
+  opacity: 0;
+}
+
+/* ---------- The board's own cursor (mouse only) ---------- */
+
+.board-cursor {
+  /* The magenta of the frame's corner tabs */
+  --magenta: #aa5078;
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 10;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 250ms var(--ease);
+}
+
+.board-cursor.is-on {
+  opacity: 1;
+}
+
+/* The circle, centred on the pointer: a small pink ring over the table */
+.board-cursor span {
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  margin: -24px 0 0 -24px;
+  border-radius: 50%;
+  border: 2px solid var(--magenta);
+  font-size: 11px;
+  letter-spacing: 0.02em;
+  color: transparent;
+  scale: 0.42;
+  transition:
+    scale 300ms var(--ease),
+    background-color 300ms var(--ease),
+    color 200ms var(--ease);
+}
+
+/* Over a block: a full magenta circle that says "Drag" */
+.board-cursor.is-over span {
+  scale: 1;
+  background: color-mix(in srgb, var(--magenta) 90%, transparent);
+  color: #fff;
+}
+
+/* Holding one: tighter, as if gripping */
+.board-cursor.is-held span {
+  scale: 0.8;
+}
+
+/* With a mouse, the circle replaces the system pointer on the board */
+@media (hover: hover) and (pointer: fine) {
+  .board,
+  .board .block,
+  .board .block.is-held {
+    cursor: none;
+  }
+}
+
 /* A block: the photo, with a soft shadow on the table */
 .block {
   position: absolute;

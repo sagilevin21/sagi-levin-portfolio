@@ -28,6 +28,8 @@ export default function BlockBoard() {
   const boardRef = useRef(null)
   const elsRef = useRef({})
   const apiRef = useRef(null)
+  const hintRef = useRef(null)
+  const cursorRef = useRef(null)
 
   useEffect(() => {
     const board = boardRef.current
@@ -39,6 +41,8 @@ export default function BlockBoard() {
     let W = 0
     let H = 0
     let unit = 0
+    let fmt = 0
+    let hintHidden = false
 
     // Start positions: spread evenly along the board's edges (a rectangle just
     // inside the border), so they always sit outside the format
@@ -67,7 +71,8 @@ export default function BlockBoard() {
       // Base block size: fits 13 blocks around the format on any screen
       unit = W < 600 ? Math.min(W * 0.15, H * 0.1) : Math.min(W * 0.095, H * 0.13, 150)
       // The format: a square in the middle, leaving a ring for the blocks
-      board.style.setProperty('--fmt', `${Math.min(W, H) - unit * 4}px`)
+      fmt = Math.min(W, H) - unit * 4
+      board.style.setProperty('--fmt', `${fmt}px`)
       Composite.clear(engine.world, false)
       const pos = keep && old.W ? bodies.map((b) => ({ x: (b.position.x / old.W) * W, y: (b.position.y / old.H) * H, angle: b.angle })) : layout()
       bodies = BLOCKS.map((b, i) => {
@@ -111,6 +116,16 @@ export default function BlockBoard() {
         el.style.transform = `translate3d(${(body.position.x - s / 2).toFixed(1)}px, ${(body.position.y - s / 2).toFixed(1)}px, 0)`
         el.firstChild.style.transform = `rotate(${body.angle.toFixed(4)}rad)`
       }
+      // "Try it yourself" steps aside while any block lies inside the frame
+      // (its centre within the square the pink corners mark)
+      const half = fmt / 2
+      const inside = bodies.some(
+        (b) => Math.abs(b.position.x - W / 2) < half && Math.abs(b.position.y - H / 2) < half,
+      )
+      if (inside !== hintHidden) {
+        hintHidden = inside
+        hintRef.current?.classList.toggle('is-hidden', inside)
+      }
     }
 
     // ---- Dragging: a soft spring between the pointer and the grabbed spot ----
@@ -146,10 +161,29 @@ export default function BlockBoard() {
       board.classList.remove('is-dragging')
       drag = null
     }
+    // ---- The cursor: a pink circle that follows the mouse over the board,
+    // grows with "Drag" over a block and tightens while one is held ----
+    const cursor = cursorRef.current
+    const onHover = (e) => {
+      if (e.pointerType !== 'mouse') return
+      const p = toBoard(e)
+      cursor.style.transform = `translate3d(${p.x.toFixed(1)}px, ${p.y.toFixed(1)}px, 0)`
+      cursor.classList.add('is-on')
+      cursor.classList.toggle('is-over', !!e.target.closest?.('[data-block]') || !!drag)
+      cursor.classList.toggle('is-held', !!drag)
+    }
+    const onLeave = () => {
+      if (!drag) cursor.classList.remove('is-on')
+    }
     board.addEventListener('pointerdown', onDown)
+    board.addEventListener('pointerleave', onLeave)
     window.addEventListener('pointermove', onMove)
     window.addEventListener('pointerup', onUp)
     window.addEventListener('pointercancel', onUp)
+    // After the drag handlers, so the cursor reflects the grab or the drop
+    window.addEventListener('pointermove', onHover)
+    window.addEventListener('pointerdown', onHover)
+    window.addEventListener('pointerup', onHover)
 
     // ---- Loop: runs only while something moves and the board is on screen ----
     let raf = 0
@@ -218,6 +252,10 @@ export default function BlockBoard() {
       clearTimeout(resizeTimer)
       cancelAnimationFrame(raf)
       board.removeEventListener('pointerdown', onDown)
+      board.removeEventListener('pointerleave', onLeave)
+      window.removeEventListener('pointermove', onHover)
+      window.removeEventListener('pointerdown', onHover)
+      window.removeEventListener('pointerup', onHover)
       window.removeEventListener('pointermove', onMove)
       window.removeEventListener('pointerup', onUp)
       window.removeEventListener('pointercancel', onUp)
@@ -230,6 +268,10 @@ export default function BlockBoard() {
       <div className="board" ref={boardRef} role="img" aria-label="Interactive board: the Facets blocks around the acrylic frame, which can be dragged and arranged">
         {/* The composition frame: the real clear acrylic frame, lying flat */}
         <img className="board-frame" src="/images/facets/blocks/acrylic.webp" alt="" draggable="false" />
+        {/* The invitation, lying in the middle of the frame; blocks slide over it */}
+        <p className="board-hint" ref={hintRef} aria-hidden="true">
+          Try it yourself
+        </p>
         {BLOCKS.map((b) => (
           <div
             key={b.id}
@@ -243,6 +285,9 @@ export default function BlockBoard() {
             </span>
           </div>
         ))}
+        <div className="board-cursor" ref={cursorRef} aria-hidden="true">
+          <span>Drag</span>
+        </div>
       </div>
       <button type="button" className="board-reset" onClick={() => apiRef.current?.scatter()}>
         Scatter the blocks

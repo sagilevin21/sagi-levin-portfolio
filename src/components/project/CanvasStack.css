@@ -1,0 +1,178 @@
+/* ---------- Canvas stack: flip through stretched canvases ---------- */
+
+.cv {
+  /* One screen of scrolling per canvas */
+  height: calc(var(--n) * 85svh + 15svh);
+  --depth: 38px;
+}
+
+.cv-stage {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  overflow: hidden;
+  perspective: 1150px;
+  perspective-origin: 50% 55%;
+}
+
+/* The whole stack, facing front and seen a touch from below, so the top
+   edges stay hidden until a canvas tips toward you */
+.cv-stack {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+  transform: rotateX(6deg);
+  cursor: pointer;
+  outline: none;
+}
+
+.cv-canvas {
+  --h: min(62svh, 640px);
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  height: min(var(--h), calc(62vw / var(--ar)));
+  aspect-ratio: var(--ar);
+  translate: -50% -50%;
+  transform-style: preserve-3d;
+  /* Tips forward around its bottom edge */
+  transform-origin: 50% 100%;
+  will-change: transform;
+}
+
+.cv-canvas > * {
+  opacity: var(--o, 1);
+}
+
+/* The painted face */
+.cv-face {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  box-shadow: 0 30px 50px -30px rgba(43, 36, 32, 0.55);
+}
+
+.cv-face img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  user-select: none;
+  pointer-events: none;
+}
+
+/* The sides of the stretcher (seen as a canvas tips) */
+.cv-side {
+  position: absolute;
+  top: 0;
+  width: var(--depth);
+  height: 100%;
+  background: linear-gradient(to right, #cfc3ad, #b9ac95);
+}
+
+.cv-side.is-right {
+  left: 100%;
+  transform-origin: 0 50%;
+  transform: rotateY(90deg);
+}
+
+.cv-side.is-left {
+  right: 100%;
+  transform-origin: 100% 50%;
+  transform: rotateY(-90deg);
+}
+
+/* The top of the stretcher, with the name and year printed along it */
+.cv-top {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: var(--depth);
+  transform-origin: 50% 0;
+  transform: rotateX(-90deg);
+  display: grid;
+  place-items: center;
+  /* Lit from above: a touch lighter toward the front edge */
+  background: linear-gradient(to top, #e6dccb, #d3c7b2);
+  overflow: hidden;
+}
+
+.cv-top span {
+  white-space: nowrap;
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(43, 36, 32, 0.75);
+  /* Upright when read from the front (the edge folds back) */
+  scale: 1 -1;
+}
+
+/* ---------- Previous / Next ---------- */
+
+.cv-controls {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: clamp(24px, 6svh, 56px);
+  z-index: 2;
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+}
+
+.cv-controls button {
+  position: relative;
+  font: inherit;
+  font-size: 14px;
+  color: var(--ink);
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  transition: opacity 300ms var(--ease);
+}
+
+.cv-controls button:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.cv-controls button::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -2px;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 350ms var(--ease);
+}
+
+.cv-controls button:not(:disabled):hover::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+/* ---------- Phones ---------- */
+
+@media (max-width: 760px) {
+  .cv {
+    --depth: 30px;
+  }
+
+  .cv-stack {
+    transform: rotateX(6deg);
+  }
+
+  .cv-canvas {
+    --h: 50svh;
+    height: min(var(--h), calc(72vw / var(--ar)));
+  }
+
+  .cv-top span {
+    font-size: 10px;
+  }
+}
