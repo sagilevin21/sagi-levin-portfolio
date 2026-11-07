@@ -14,6 +14,7 @@ const pages = {
   'feather-weight': lazy(() => import('./projects/FeatherWeight')),
   ritual: lazy(() => import('./projects/Ritual')),
   paintings: lazy(() => import('./projects/Paintings')),
+  balansir: lazy(() => import('./projects/Balansir')),
 }
 
 export default function ProjectPage() {

@@ -53,8 +53,8 @@ export default function FeatherWeight() {
               <dd>{project.year}</dd>
             </div>
             <div>
-              <dt>Duration</dt>
-              <dd>{project.duration}</dd>
+              <dt>Context</dt>
+              <dd>{project.context}</dd>
             </div>
             <div>
               <dt>Designer</dt>

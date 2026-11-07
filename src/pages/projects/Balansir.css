@@ -1,0 +1,114 @@
+/* ---------- Opening: the object turning, on the right ---------- */
+
+.bz-hero {
+  position: relative;
+  min-height: 100svh;
+  display: grid;
+  align-items: end;
+  padding: 0 var(--gutter) clamp(48px, 9svh, 110px);
+  overflow: hidden;
+  /* A click anywhere plays the turn again */
+  cursor: pointer;
+}
+
+/* The square video; the object fills its middle (about 10–92% across,
+   23–76% down), so the square can run off the edges */
+.bz-turn {
+  position: absolute;
+  top: 46%;
+  right: -3vw;
+  width: min(64vw, 112svh);
+  aspect-ratio: 1;
+  translate: 0 -50%;
+  pointer-events: none;
+}
+
+.bz-hero-text {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: clamp(16px, 2vw, 28px);
+}
+
+.bz-hero-text .p-lede {
+  max-width: 30ch;
+}
+
+/* ---------- Try it yourself ---------- */
+
+/* The beam's ends may swing past the page edge on narrow screens */
+.bz-try {
+  overflow-x: clip;
+}
+
+/* ---------- Materials: the parts, the full screen, the line on it ---------- */
+
+.bz-materials {
+  position: relative;
+  height: 100svh;
+  min-height: 520px;
+  /* The photo's own wall color, around it where the screen is taller */
+  background: #eeeeee;
+  overflow: hidden;
+}
+
+.bz-materials picture,
+.bz-materials img {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.bz-materials img {
+  object-fit: cover;
+}
+
+/* In the empty wall at the bottom left, clear of the parts */
+.bz-materials-line {
+  position: absolute;
+  left: var(--gutter);
+  bottom: clamp(40px, 9svh, 100px);
+  max-width: 11ch;
+  margin: 0;
+  color: #24201a;
+}
+
+/* ---------- Phones ---------- */
+
+@media (max-width: 760px) {
+  /* The object above, the title below */
+  .bz-hero {
+    padding-top: 78vw;
+  }
+
+  .bz-turn {
+    top: 0;
+    right: -6vw;
+    width: 112vw;
+    translate: 0 -4%;
+  }
+
+  .bz-hero-text .p-lede {
+    max-width: none;
+  }
+
+  /* The square photo the full width, the line above it on the same wall */
+  .bz-materials {
+    height: auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column-reverse;
+    padding-top: 10vh;
+  }
+
+  .bz-materials picture,
+  .bz-materials img {
+    height: auto;
+  }
+
+  .bz-materials-line {
+    position: static;
+    max-width: 14ch;
+    padding: 0 var(--gutter) 12px;
+  }
+}

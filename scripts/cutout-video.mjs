@@ -6,6 +6,9 @@
 // (white = solid) below. The site's CutoutVideo component puts the two back
 // together.
 //
+// It works on a still photo too: give it an image and an output ending in
+// .png or .webp, and it saves the cut-out picture with real transparency.
+//
 // Usage: node scripts/cutout-video.mjs <in.mp4> <out.mp4> [key=value ...]
 //   start=0       where to start (seconds)
 //   length=       how long to keep (seconds; default: to the end)
@@ -29,6 +32,7 @@ const opt = Object.fromEntries(rest.map((a) => a.split('=')))
 const width = +(opt.width ?? 540)
 const [t0, t1] = (opt.soft ?? '10,42').split(',').map(Number)
 const crf = opt.crf ?? '22'
+const still = /\.(png|webp)$/i.test(output)
 
 const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'cutout-'))
 const inDir = path.join(tmp, 'in')
@@ -182,6 +186,21 @@ for (const [k, name] of frames.entries()) {
       const j = (y * W + x) * 3
       clean[j] = clean[j + 1] = clean[j + 2] = g
     }
+  // A still: one picture with its transparency built in
+  if (still) {
+    const rgba = Buffer.alloc(W * H * 4)
+    for (let p = 0; p < W * H; p++) {
+      rgba[p * 4] = color[p * 3]
+      rgba[p * 4 + 1] = color[p * 3 + 1]
+      rgba[p * 4 + 2] = color[p * 3 + 2]
+      rgba[p * 4 + 3] = clean[p * 3]
+    }
+    const img = sharp(rgba, { raw: { width: W, height: H, channels: 4 } })
+    await (/\.webp$/i.test(output) ? img.webp({ quality: 88, alphaQuality: 100 }) : img.png()).toFile(output)
+    fs.rmSync(tmp, { recursive: true, force: true })
+    console.log('done:', output, `${Math.round(fs.statSync(output).size / 1024)} KB`)
+    process.exit(0)
+  }
   // Colours on top, transparency below
   await sharp({ create: { width: W, height: H * 2, channels: 3, background: '#000' } })
     .composite([

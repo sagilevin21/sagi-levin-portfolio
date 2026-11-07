@@ -57,6 +57,24 @@
   will-change: transform;
 }
 
+/* ---------- Cut-out videos (CutoutVideo) ---------- */
+
+.cutout,
+.cutout canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* The video itself only feeds the picture */
+.cutout video {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
 /* ---------- Text ---------- */
 
 .p-body {

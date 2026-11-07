@@ -21,10 +21,29 @@ void main() {
 }`
 
 // speed: playback speed (1 = as filmed)
-export default function CutoutVideo({ src, fallback, alt, speed = 1, className = '' }) {
+// once: play through one time and rest on the last frame (with reduced
+//   motion it shows the last frame straight away)
+// delay: ms to wait before the first play, e.g. while the page fades in
+// replay: change this number to play a `once` video again from the start
+export default function CutoutVideo({
+  src,
+  fallback,
+  alt,
+  speed = 1,
+  once = false,
+  delay = 0,
+  replay = 0,
+  className = '',
+}) {
   const canvasRef = useRef(null)
   const videoRef = useRef(null)
+  const replayRef = useRef(null)
   const [failed, setFailed] = useState(false)
+
+  // Play it again when asked
+  useEffect(() => {
+    if (replay) replayRef.current?.()
+  }, [replay])
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -92,38 +111,82 @@ export default function CutoutVideo({ src, fallback, alt, speed = 1, className =
       raf = 0
     }
 
+    // Played through once: stays on its last frame from then on
+    let rested = false
+    const rest = () => {
+      rested = true
+      stop()
+      draw()
+    }
+    const waitUntil = performance.now() + delay
+    let wait = 0
     const io = new IntersectionObserver(([e]) => {
       visible = e.isIntersecting
-      if (visible && !reduce) {
-        video.playbackRate = speed
-        video.play().catch(() => {})
-        if (!raf) onFrame()
+      clearTimeout(wait)
+      if (visible && !reduce && !rested) {
+        const start = () => {
+          video.playbackRate = speed
+          video.play().catch(() => {})
+          if (!raf) onFrame()
+        }
+        const left = waitUntil - performance.now()
+        if (left > 0) wait = setTimeout(start, left)
+        else start()
       } else {
         video.pause()
         stop()
       }
     })
     io.observe(canvas)
-    const onReady = () => draw()
+    const onEnded = () => rest()
+    replayRef.current = () => {
+      if (reduce) return
+      clearTimeout(wait)
+      rested = false
+      video.currentTime = 0
+      video.playbackRate = speed
+      video.play().catch(() => {})
+      if (!raf) onFrame()
+    }
+    if (once) {
+      video.loop = false
+      video.addEventListener('ended', onEnded)
+      // Reduced motion: straight to the last frame
+      if (reduce) {
+        const toEnd = () => {
+          video.currentTime = Math.max(0, video.duration - 0.05)
+          rested = true
+        }
+        if (video.readyState >= 1) toEnd()
+        else video.addEventListener('loadedmetadata', toEnd, { once: true })
+      }
+    }
+    const onReady = () => {
+      // Before it plays, show the first frame
+      draw()
+    }
     video.addEventListener('loadeddata', onReady)
     video.addEventListener('seeked', onReady)
     window.addEventListener('resize', onReady)
 
     return () => {
+      replayRef.current = null
       io.disconnect()
+      clearTimeout(wait)
       stop()
       video.pause()
+      video.removeEventListener('ended', onEnded)
       video.removeEventListener('loadeddata', onReady)
       video.removeEventListener('seeked', onReady)
       window.removeEventListener('resize', onReady)
     }
-  }, [src, speed])
+  }, [src, speed, once, delay])
 
   if (failed) return <img className={className} src={fallback} alt={alt} />
   return (
     <div className={`cutout ${className}`}>
       <canvas ref={canvasRef} role="img" aria-label={alt} />
-      <video ref={videoRef} src={src} muted loop playsInline preload="auto" aria-hidden="true" />
+      <video ref={videoRef} src={src} muted loop={!once} playsInline preload="auto" aria-hidden="true" />
     </div>
   )
 }

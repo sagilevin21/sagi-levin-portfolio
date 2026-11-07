@@ -63,8 +63,8 @@ export default function Facets() {
             <dd>{project.year}</dd>
           </div>
           <div>
-            <dt>Duration</dt>
-            <dd>{project.duration}</dd>
+            <dt>Context</dt>
+            <dd>{project.context}</dd>
           </div>
           <div>
             <dt>Designers</dt>
